@@ -1,0 +1,14 @@
+services:
+    digip_deploy.jenkins:
+        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\Jenkins
+        arguments: ["@digip_deploy.ci_type_builder", "@digip_deploy.ci_settings_service", "%kernel.root_dir%"]
+
+    digip_deploy.ci_processor.jenkins:
+        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\JenkinsProcessor
+        arguments: ["@digip_deploy.ci_apptype_settings_service", "@digip_deploy.jenkins"]
+
+
+    digip_deploy.ci_type.jenkins:
+        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\CiType\JenkinsCiType
+        tags:
+            - { name: digip_deploy.ci_type}
