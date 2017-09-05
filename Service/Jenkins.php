@@ -2,8 +2,8 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service;
 
-use Digip\AppDeployBundle\Service\CiSettingsService;
-use Digip\AppDeployBundle\Service\CiTypeBuilder;
+use DigipolisGent\Domainator9k\CoreBundle\Service\CiSettingsService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\CiTypeBuilder;
 use Digip\DeployBundle\Task\Factory as TaskFactory;
 
 class Jenkins

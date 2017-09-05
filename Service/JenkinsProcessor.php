@@ -2,8 +2,8 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service;
 
-use Digip\AppDeployBundle\Interfaces\CiProcessorInterface;
-use Digip\AppDeployBundle\Service\CiAppTypeSettingsService;
+use DigipolisGent\Domainator9k\CoreBundle\Interfaces\CiProcessorInterface;
+use DigipolisGent\Domainator9k\CoreBundle\Service\CiAppTypeSettingsService;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings;
 use Digip\DeployBundle\Entity\Application;
 use Digip\DeployBundle\Entity\AppEnvironment;

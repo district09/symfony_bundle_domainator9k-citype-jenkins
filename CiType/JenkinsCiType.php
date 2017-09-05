@@ -2,7 +2,7 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\CiType;
 
-use Digip\AppDeployBundle\Entity\BaseCiType;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\BaseCiType;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsSettings;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\JenkinsCiAppTypeSettingsType;

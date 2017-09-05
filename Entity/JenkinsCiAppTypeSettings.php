@@ -4,7 +4,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Digip\AppDeployBundle\Entity\BaseCiAppTypeSettings;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\BaseCiAppTypeSettings;
 
 /**
  * @ORM\Entity
