@@ -2,9 +2,9 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Console;
 
-use Digip\DeployBundle\Entity\Settings;
-use Digip\DeployBundle\Ssh\Shell;
-use Digip\DeployBundle\Task\Console\AbstractConsole;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Settings;
+use DigipolisGent\Domainator9k\CoreBundle\Ssh\Shell;
+use DigipolisGent\Domainator9k\CoreBundle\Task\Console\AbstractConsole;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class Jenkins extends AbstractConsole

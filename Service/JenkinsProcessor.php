@@ -5,9 +5,9 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service;
 use DigipolisGent\Domainator9k\CoreBundle\Interfaces\CiProcessorInterface;
 use DigipolisGent\Domainator9k\CoreBundle\Service\CiAppTypeSettingsService;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings;
-use Digip\DeployBundle\Entity\Application;
-use Digip\DeployBundle\Entity\AppEnvironment;
-use Digip\DeployBundle\Entity\Server;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Application;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\AppEnvironment;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Server;
 
 class JenkinsProcessor implements CiProcessorInterface
 {

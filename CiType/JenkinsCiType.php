@@ -2,12 +2,12 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\CiType;
 
-use DigipolisGent\Domainator9k\CoreBundle\Entity\BaseCiType;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsSettings;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\JenkinsCiAppTypeSettingsType;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\JenkinsTypeSettingsType;
-use Digip\DeployBundle\Entity\AppEnvironment;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\AppEnvironment;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\BaseCiType;
 
 /**
  * Class JenkinsCiType.
