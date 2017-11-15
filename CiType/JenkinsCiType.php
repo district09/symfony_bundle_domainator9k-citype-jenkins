@@ -8,6 +8,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\JenkinsCiAppTypeSettin
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\JenkinsTypeSettingsType;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\AppEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\BaseCiType;
+use DigipolisGent\Domainator9k\CoreBundle\Interfaces\CiTypeSettingsInterface;
 
 /**
  * Class JenkinsCiType.
@@ -45,12 +46,12 @@ class JenkinsCiType extends BaseCiType
     }
 
     /**
-     * @param JenkinsSettings $settings
+     * @param CiTypeSettingsInterface $settings
      * @param AppEnvironment  $env
      *
      * @return string
      */
-    public function buildCiUrl($settings, AppEnvironment $env)
+    public function buildCiUrl(CiTypeSettingsInterface $settings, AppEnvironment $env)
     {
         return $settings->getJenkinsUrl().'job/'.$env->getFullNameCanonical();
     }
@@ -60,7 +61,7 @@ class JenkinsCiType extends BaseCiType
      *
      * @return mixed
      */
-    public function buildUrl($ciTypeSettings)
+    public function buildUrl(CiTypeSettingsInterface $ciTypeSettings)
     {
         return $ciTypeSettings->getJenkinsUrl();
     }
