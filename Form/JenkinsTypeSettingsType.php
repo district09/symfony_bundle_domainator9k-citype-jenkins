@@ -23,9 +23,7 @@ class JenkinsTypeSettingsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            //set this from settingsEntityClass in deploytype?
             'data_class' => JenkinsSettings::class,
-            'application_types' => [],
             'deploy_type' => null,
         ));
     }
