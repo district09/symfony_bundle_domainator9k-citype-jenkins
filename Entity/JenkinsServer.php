@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="jenkins_settings")
+ * @ORM\Table(name="jenkins_server")
  */
-class JenkinsSettings
+class JenkinsServer
 {
     /**
      * @var int
@@ -18,6 +18,13 @@ class JenkinsSettings
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name",type="string")
+     */
+    protected $name;
 
     /**
      * @var string
@@ -39,6 +46,7 @@ class JenkinsSettings
      * @var string
      * @ORM\Column(name="jenkins_private_key_file", type="string", nullable=true)
      * @Assert\Length(min="1", max="255")
+     * @Assert\NotBlank()
      */
     protected $jenkinsPrivateKeyFile;
 
@@ -46,6 +54,7 @@ class JenkinsSettings
      * @var string
      * @ORM\Column(name="jenkins_private_key_passphrase", type="string", nullable=true)
      * @Assert\Length(max="255")
+     * @Assert\NotBlank()
      */
     protected $jenkinsPrivateKeyPassphrase;
 
@@ -147,5 +156,21 @@ class JenkinsSettings
         $this->jenkinsPrivateKeyPassphrase = $jenkinsPrivateKeyPassphrase;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
     }
 }

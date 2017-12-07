@@ -6,9 +6,14 @@ services:
     digip_deploy.ci_processor.jenkins:
         class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\JenkinsProcessor
         arguments: ["@digip_deploy.ci_apptype_settings_service", "@digip_deploy.jenkins"]
-
-
-    digip_deploy.ci_type.jenkins:
-        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\CiType\JenkinsCiType
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provider\DataTypeProvider:
         tags:
-            - { name: digip_deploy.ci_type}
+            - { name: data_type_provider }
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\JenkinsServerChoiceFieldType:
+        autowire: true
+        tags:
+            - { name: field_type}
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\GroovyScriptChoiceFieldType:
+        autowire: true
+        tags:
+            - { name: field_type}

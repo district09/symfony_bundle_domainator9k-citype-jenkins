@@ -3,10 +3,11 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="groovyscript")
+ * @ORM\Table(name="groovy_script")
  */
 class GroovyScript
 {
@@ -20,39 +21,18 @@ class GroovyScript
 
     /**
      * @var string
-     * @ORM\Column(type="string")
+     *
+     * @ORM\Column(name="name",type="string")
+     */
+    protected $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     * @Assert\NotBlank()
      */
     protected $content;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings", inversedBy="deployJobGroovyScripts")
-     * @ORM\JoinColumn(name="deploy_ciapptypesettings_id", referencedColumnName="id")
-     */
-    protected $deployJobCiAppTypeSetting;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings", inversedBy="revertJobGroovyScripts")
-     * @ORM\JoinColumn(name="revert_ciapptypesettings_id", referencedColumnName="id")
-     */
-    protected $revertJobCiAppTypeSetting;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings", inversedBy="syncJobGroovyScripts")
-     * @ORM\JoinColumn(name="sync_ciapptypesettings_id", referencedColumnName="id")
-     */
-    protected $syncJobCiAppTypeSetting;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings", inversedBy="dumpJobGroovyScripts")
-     * @ORM\JoinColumn(name="dump_ciapptypesettings_id", referencedColumnName="id")
-     */
-    protected $dumpJobCiAppTypeSetting;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsCiAppTypeSettings", inversedBy="validateJobGroovyScripts")
-     * @ORM\JoinColumn(name="validate_ciapptypesettings_id", referencedColumnName="id")
-     */
-    protected $validateJobCiAppTypeSetting;
 
     /**
      * @return int
@@ -60,6 +40,22 @@ class GroovyScript
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -73,88 +69,8 @@ class GroovyScript
     /**
      * @param string $content
      */
-    public function setContent($content)
+    public function setContent(string $content)
     {
         $this->content = $content;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDeployJobCiAppTypeSetting()
-    {
-        return $this->deployJobCiAppTypeSetting;
-    }
-
-    /**
-     * @param mixed $deployJobCiAppTypeSetting
-     */
-    public function setDeployJobCiAppTypeSetting($deployJobCiAppTypeSetting)
-    {
-        $this->deployJobCiAppTypeSetting = $deployJobCiAppTypeSetting;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRevertJobCiAppTypeSetting()
-    {
-        return $this->revertJobCiAppTypeSetting;
-    }
-
-    /**
-     * @param mixed $revertJobCiAppTypeSetting
-     */
-    public function setRevertJobCiAppTypeSetting($revertJobCiAppTypeSetting)
-    {
-        $this->revertJobCiAppTypeSetting = $revertJobCiAppTypeSetting;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSyncJobCiAppTypeSetting()
-    {
-        return $this->syncJobCiAppTypeSetting;
-    }
-
-    /**
-     * @param mixed $syncJobCiAppTypeSetting
-     */
-    public function setSyncJobCiAppTypeSetting($syncJobCiAppTypeSetting)
-    {
-        $this->syncJobCiAppTypeSetting = $syncJobCiAppTypeSetting;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDumpJobCiAppTypeSetting()
-    {
-        return $this->dumpJobCiAppTypeSetting;
-    }
-
-    /**
-     * @param mixed $dumpJobCiAppTypeSetting
-     */
-    public function setDumpJobCiAppTypeSetting($dumpJobCiAppTypeSetting)
-    {
-        $this->dumpJobCiAppTypeSetting = $dumpJobCiAppTypeSetting;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValidateJobCiAppTypeSetting()
-    {
-        return $this->validateJobCiAppTypeSetting;
-    }
-
-    /**
-     * @param mixed $validateJobCiAppTypeSetting
-     */
-    public function setValidateJobCiAppTypeSetting($validateJobCiAppTypeSetting)
-    {
-        $this->validateJobCiAppTypeSetting = $validateJobCiAppTypeSetting;
     }
 }
