@@ -4,6 +4,7 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
+use DigipolisGent\SettingBundle\FieldType\AbstractFieldType;
 use DigipolisGent\SettingBundle\FieldType\FieldTypeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -12,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
  * Class JenkinsServerChoiceFieldType
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType
  */
-class JenkinsServerChoiceFieldType implements FieldTypeInterface
+class JenkinsServerChoiceFieldType extends AbstractFieldType
 {
 
     private $entityManager;
