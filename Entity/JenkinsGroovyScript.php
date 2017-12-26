@@ -3,7 +3,9 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -11,17 +13,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity
  *
  * @ORM\Entity()
+ * @UniqueEntity(fields={"name"})
  */
 class JenkinsGroovyScript
 {
 
-    /**
-     * @var int
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * @var string
@@ -38,23 +35,6 @@ class JenkinsGroovyScript
      * @Assert\NotBlank()
      */
     protected $content;
-
-    /**
-     * @var JenkinsJob
-     *
-     * @ORM\ManyToOne(targetEntity="JenkinsJob",inversedBy="jenkinsGroovyScripts")
-     * @ORM\JoinColumn(referencedColumnName="id",name="jenkins_job_id")
-     */
-    protected $jenkinsJob;
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     /**
      * @return string
      */
@@ -85,19 +65,5 @@ class JenkinsGroovyScript
     public function setContent(string $content)
     {
         $this->content = $content;
-    }
-
-    /**
-     * @param JenkinsJob $jenkinsJob
-     */
-    public function setJenkingsJob(JenkinsJob $jenkinsJob){
-        $this->jenkinsJob = $jenkinsJob;
-    }
-
-    /**
-     * @return JenkinsJob
-     */
-    public function getJenkinsJob(){
-        return $this->jenkinsJob;
     }
 }

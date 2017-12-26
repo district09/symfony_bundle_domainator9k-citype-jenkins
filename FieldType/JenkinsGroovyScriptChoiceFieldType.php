@@ -4,6 +4,7 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\GroovyScript;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\AbstractApplication;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
@@ -17,10 +18,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
- * Class GroovyScriptChoiceFieldType
+ * Class JenkinsGroovyScriptChoiceFieldType
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType
  */
-class JenkinsJobChoiceFieldType extends AbstractFieldType
+class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
 {
 
     private $entityManager;
@@ -35,7 +36,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
      */
     public static function getName(): string
     {
-        return 'jenkins_job_choice';
+        return 'jenkins_groovy_script';
     }
 
     /**
@@ -57,9 +58,9 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $options['multiple'] = true;
         $options['expanded'] = true;
 
-        $jenkinsJobs = $this->entityManager->getRepository(JenkinsJob::class)->findAll();
-        foreach ($jenkinsJobs as $jenkinsJob) {
-            $options['choices'][$jenkinsJob->getName()] = $jenkinsJob->getId();
+        $jenkinsGroovyScripts = $this->entityManager->getRepository(JenkinsGroovyScript::class)->findAll();
+        foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
+            $options['choices'][$jenkinsGroovyScript->getName()] = $jenkinsGroovyScript->getId();
         }
 
         $options['data'] = json_decode($value, true);
@@ -79,9 +80,11 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
                 ->getRepository(ApplicationTypeEnvironment::class)->findOneBy($criteria);
 
             $settingDataValue = $this->entityManager->getRepository(SettingDataValue::class)
-                ->findOneByKey($applicationTypeEnvironment, 'jenkins_job');
+                ->findOneByKey($applicationTypeEnvironment, 'jenkins_groovy_script');
 
-            $options['data'] = json_decode($settingDataValue->getValue(), true);
+            if ($settingDataValue) {
+                $options['data'] = json_decode($settingDataValue->getValue(), true);
+            }
         }
 
         return $options;

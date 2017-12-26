@@ -2,6 +2,7 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,13 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class JenkinsServer
 {
-    /**
-     * @var int
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+
+    use IdentifiableTrait;
 
     /**
      * @var string
@@ -58,26 +54,6 @@ class JenkinsServer
      * @Assert\NotBlank()
      */
     protected $jenkinsPrivateKeyPassphrase;
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * @return string
