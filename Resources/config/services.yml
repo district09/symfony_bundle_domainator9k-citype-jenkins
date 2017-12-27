@@ -1,11 +1,4 @@
 services:
-    digip_deploy.jenkins:
-        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\Jenkins
-        arguments: ["@digip_deploy.ci_type_builder", "@digip_deploy.ci_settings_service", "%kernel.root_dir%"]
-
-    digip_deploy.ci_processor.jenkins:
-        class: DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\JenkinsProcessor
-        arguments: ["@digip_deploy.ci_apptype_settings_service", "@digip_deploy.jenkins"]
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provider\DataTypeProvider:
         tags:
             - { name: data_type_provider }
@@ -13,7 +6,12 @@ services:
         autowire: true
         tags:
             - { name: field_type}
-    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\JenkinsGroovyScriptChoiceFieldType:
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\JenkinsJobChoiceFieldType:
         autowire: true
         tags:
             - { name: field_type}
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener:
+        tags:
+            - { name: kernel.event_listener, event: domainator.build, method: onBuild, priority: 40 }
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType:
+        tags: [form.type]

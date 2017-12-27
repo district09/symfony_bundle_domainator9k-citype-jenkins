@@ -36,10 +36,10 @@ class DataTypeProvider implements DataTypeProviderInterface
                 'entity_types' => ['application_environment'],
             ],
             [
-                'key' => 'jenkins_groovy_script',
-                'label' => 'Jenkins groovy script',
+                'key' => 'jenkins_job',
+                'label' => 'Jenkins job',
                 'required' => true,
-                'field_type' => 'jenkins_groovy_script',
+                'field_type' => 'jenkins_job',
                 'entity_types' => ['application_type_environment','application_environment'],
             ],
         ];

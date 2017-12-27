@@ -3,20 +3,19 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
+
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class JenkinsGroovyScript
+ * Class JenkinsJob
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity
  *
  * @ORM\Entity()
- * @UniqueEntity(fields={"name"})
  */
-class JenkinsGroovyScript
+class JenkinsJob
 {
 
     use IdentifiableTrait;
@@ -30,17 +29,16 @@ class JenkinsGroovyScript
     protected $name;
 
     /**
-     * @var string
+     * @var ArrayCollection
      *
-     * @ORM\Column(name="content",type="text")
-     * @Assert\NotBlank()
+     * @ORM\ManyToMany(targetEntity="JenkinsGroovyScript", inversedBy="jenkinsJobs",cascade={"persist"})
+     * @ORM\JoinTable(name="jenkins_job_jenkins_groovy_script")
      */
-    protected $content;
-
+    protected $jenkinsGroovyScripts;
 
     public function __construct()
     {
-        $this->jenkinsJobs = new ArrayCollection();
+        $this->jenkinsGroovyScripts = new ArrayCollection();
     }
 
     /**
@@ -59,19 +57,17 @@ class JenkinsGroovyScript
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getContent()
+
+    public function setJenkinsGroovyScripts($groovyScripts)
     {
-        return $this->content;
+        $this->jenkinsGroovyScripts = $groovyScripts;
     }
 
     /**
-     * @param string $content
+     * @return ArrayCollection
      */
-    public function setContent(string $content)
+    public function getJenkinsGroovyScripts()
     {
-        $this->content = $content;
+        return $this->jenkinsGroovyScripts->toArray();
     }
 }

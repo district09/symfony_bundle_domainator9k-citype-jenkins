@@ -6,6 +6,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\GroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\AbstractApplication;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationType;
@@ -16,12 +17,14 @@ use DigipolisGent\SettingBundle\FieldType\FieldTypeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
- * Class JenkinsGroovyScriptChoiceFieldType
+ * Class JenkinsJobChoiceFieldType
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType
  */
-class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
+class JenkinsJobChoiceFieldType extends AbstractFieldType
 {
 
     private $entityManager;
@@ -36,7 +39,7 @@ class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
      */
     public static function getName(): string
     {
-        return 'jenkins_groovy_script';
+        return 'jenkins_job';
     }
 
     /**
@@ -44,7 +47,7 @@ class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
      */
     public function getFormType(): string
     {
-        return ChoiceType::class;
+        return CollectionType::class;
     }
 
     /**
@@ -53,17 +56,18 @@ class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
      */
     public function getOptions($value): array
     {
+        $groovyScripts = $this->entityManager->getRepository(JenkinsGroovyScript::class)->findAll();
+
         $options = [];
+        $options['entry_type'] = JenkinsJobFormType::class;
+        $options['allow_add'] = true;
+        $options['allow_delete'] = true;
+        $options['by_reference'] = false;
+        $options['prototype'] = true;
+        $options['prototype_data'] = new JenkinsJob();
+        $options['entry_options']['groovy_script_options'] = $groovyScripts;
 
-        $options['multiple'] = true;
-        $options['expanded'] = true;
-
-        $jenkinsGroovyScripts = $this->entityManager->getRepository(JenkinsGroovyScript::class)->findAll();
-        foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
-            $options['choices'][$jenkinsGroovyScript->getName()] = $jenkinsGroovyScript->getId();
-        }
-
-        $options['data'] = json_decode($value, true);
+        $ids = json_decode($value, true);
 
         $originEntity = $this->getOriginEntity();
 
@@ -80,12 +84,24 @@ class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
                 ->getRepository(ApplicationTypeEnvironment::class)->findOneBy($criteria);
 
             $settingDataValue = $this->entityManager->getRepository(SettingDataValue::class)
-                ->findOneByKey($applicationTypeEnvironment, 'jenkins_groovy_script');
+                ->findOneByKey($applicationTypeEnvironment, self::getName());
 
-            if ($settingDataValue) {
-                $options['data'] = json_decode($settingDataValue->getValue(), true);
+            if (!is_null($settingDataValue)) {
+                $ids = json_decode($settingDataValue->getValue(), true);
             }
         }
+
+        $jenkinsJobRepository = $this->entityManager->getRepository(JenkinsJob::class);
+
+        $data = [];
+
+        if (!is_null($ids)) {
+            foreach ($ids as $id) {
+                $data[] = $jenkinsJobRepository->find($id);
+            }
+        }
+
+        $options['data'] = $data;
 
         return $options;
     }
@@ -96,6 +112,14 @@ class JenkinsGroovyScriptChoiceFieldType extends AbstractFieldType
      */
     public function encodeValue($value): string
     {
-        return json_encode($value);
+        $jenkinsJobIds = [];
+
+        foreach ($value as $jenkinsJob) {
+            $this->entityManager->persist($jenkinsJob);
+            $jenkinsJobIds[] = $jenkinsJob->getId();
+        }
+
+        return json_encode($jenkinsJobIds);
     }
+
 }
