@@ -1,14 +1,18 @@
 services:
+    _defaults:
+        autowire: true
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provider\DataTypeProvider:
         tags:
             - { name: data_type_provider }
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\JenkinsServerChoiceFieldType:
-        autowire: true
         tags:
             - { name: field_type}
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\FieldType\JenkinsJobChoiceFieldType:
-        autowire: true
         tags:
             - { name: field_type}
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType:
         tags: [form.type]
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener:
+        tags:
+            - { name: kernel.event_listener, event: domainator.build, method: onBuild, priority: 40 }
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\JenkinsCliService:
