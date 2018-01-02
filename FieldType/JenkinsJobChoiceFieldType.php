@@ -122,4 +122,23 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         return json_encode($jenkinsJobIds);
     }
 
+    /**
+     * @param $value
+     * @return array
+     */
+    public function decodeValue($value)
+    {
+        $ids = json_decode($value, true);
+        $jenkinsJobRepository = $this->entityManager->getRepository(JenkinsJob::class);
+        $jenkinsJobs = [];
+
+        if (!is_null($ids)) {
+            foreach ($ids as $id) {
+                $jenkinsJobs[] = $jenkinsJobRepository->find($id);
+            }
+        }
+
+        return $jenkinsJobs;
+    }
+
 }

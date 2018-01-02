@@ -67,4 +67,9 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
     {
         return $value;
     }
+
+    public function decodeValue($value)
+    {
+        return $this->entityManager->getRepository(JenkinsServer::class)->find($value);
+    }
 }

@@ -25,35 +25,40 @@ class JenkinsServer
 
     /**
      * @var string
-     * @ORM\Column(name="jenkins_url", type="string", nullable=false)
+     * @ORM\Column(name="url", type="string", nullable=false)
      * @Assert\NotBlank()
      * @Assert\Length(min="1", max="255")
      */
-    protected $jenkinsUrl;
+    protected $url;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="port", type="integer", nullable=false)
+     * @Assert\NotBlank()
+     */
+    protected $port;
 
     /**
      * @var string
-     * @ORM\Column(name="jenkins_cli", type="string", nullable=false)
-     * @Assert\NotBlank()
-     * @Assert\Length(min="1", max="255")
+     *
+     * @ORM\Column(name="user",type="string")
      */
-    protected $jenkinsCli;
+    protected $user;
 
     /**
      * @var string
-     * @ORM\Column(name="jenkins_private_key_file", type="string", nullable=true)
-     * @Assert\Length(min="1", max="255")
-     * @Assert\NotBlank()
+     *
+     * @ORM\Column(name="token",type="string")
      */
-    protected $jenkinsPrivateKeyFile;
+    protected $token;
 
     /**
      * @var string
-     * @ORM\Column(name="jenkins_private_key_passphrase", type="string", nullable=true)
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
+     *
+     * @ORM\Column(name="template_name",type="string")
      */
-    protected $jenkinsPrivateKeyPassphrase;
+    protected $templateName;
 
     /**
      * @return string
@@ -78,66 +83,6 @@ class JenkinsServer
     /**
      * @return string
      */
-    public function getJenkinsCli()
-    {
-        return $this->jenkinsCli;
-    }
-
-    /**
-     * @param string $jenkinsCli
-     *
-     * @return $this
-     */
-    public function setJenkinsCli($jenkinsCli)
-    {
-        $this->jenkinsCli = $jenkinsCli;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getJenkinsPrivateKeyFile()
-    {
-        return $this->jenkinsPrivateKeyFile;
-    }
-
-    /**
-     * @param string $jenkinsPrivateKeyFile
-     *
-     * @return $this
-     */
-    public function setJenkinsPrivateKeyFile($jenkinsPrivateKeyFile)
-    {
-        $this->jenkinsPrivateKeyFile = $jenkinsPrivateKeyFile;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getJenkinsPrivateKeyPassphrase()
-    {
-        return $this->jenkinsPrivateKeyPassphrase;
-    }
-
-    /**
-     * @param string $jenkinsPrivateKeyPassphrase
-     *
-     * @return $this
-     */
-    public function setJenkinsPrivateKeyPassphrase($jenkinsPrivateKeyPassphrase)
-    {
-        $this->jenkinsPrivateKeyPassphrase = $jenkinsPrivateKeyPassphrase;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getName()
     {
         return $this->name;
@@ -146,8 +91,88 @@ class JenkinsServer
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+    /**
+     * @param int $port
+     */
+    public function setPort($port)
+    {
+        $this->port = $port;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param string $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateName()
+    {
+        return $this->templateName;
+    }
+
+    /**
+     * @param string $templateName
+     */
+    public function setTemplateName($templateName)
+    {
+        $this->templateName = $templateName;
     }
 }

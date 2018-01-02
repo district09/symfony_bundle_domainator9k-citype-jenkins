@@ -22,13 +22,6 @@ class DataTypeProvider implements DataTypeProviderInterface
     {
         return [
             [
-                'key' => 'jenkins_job_uri',
-                'label' => 'Jenkins job uri',
-                'required' => true,
-                'field_type' => 'string',
-                'entity_types' => ['application_environment'],
-            ],
-            [
                 'key' => 'jenkins_server',
                 'label' => 'Jenkins server',
                 'required' => true,
@@ -40,8 +33,8 @@ class DataTypeProvider implements DataTypeProviderInterface
                 'label' => 'Jenkins job',
                 'required' => true,
                 'field_type' => 'jenkins_job',
-                'entity_types' => ['application_type_environment','application_environment'],
-            ],
+                'entity_types' => ['application_type_environment', 'application_environment'],
+            ]
         ];
     }
 }
