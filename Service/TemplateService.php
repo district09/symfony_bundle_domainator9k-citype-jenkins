@@ -10,7 +10,6 @@ use DigipolisGent\SettingBundle\Entity\Traits\SettingImplementationTrait;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use DigipolisGent\SettingBundle\Service\EntityTypeCollector;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Debug\Exception\ContextErrorException;
 
 /**
  * Class TemplateService

@@ -5,8 +5,6 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Psr7\Request;
 
 /**
  * Class ApiService

@@ -1,18 +1,20 @@
 {
-    "name": "digipolisgent/domainator9k-citype-jenkins-bundle",
-    "type": "symfony-bundle",
-    "description": "",
-    "license": "MIT",
-    "authors": [],
-    "support": {},
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=7.1"
-    },
-    "require-dev": {
-        "symfony/symfony": ">=3.4"
-    },
-    "autoload": {
-        "psr-4": { "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": "" }
+  "name": "digipolisgent/domainator9k-citype-jenkins-bundle",
+  "type": "symfony-bundle",
+  "description": "",
+  "license": "MIT",
+  "authors": [],
+  "support": {},
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.1"
+  },
+  "require-dev": {
+    "symfony/symfony": ">=3.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": ""
     }
+  }
 }

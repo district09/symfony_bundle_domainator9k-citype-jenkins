@@ -7,18 +7,13 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\GroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType;
-use DigipolisGent\Domainator9k\CoreBundle\Entity\AbstractApplication;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationType;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationTypeEnvironment;
 use DigipolisGent\SettingBundle\Entity\SettingDataValue;
 use DigipolisGent\SettingBundle\FieldType\AbstractFieldType;
-use DigipolisGent\SettingBundle\FieldType\FieldTypeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * Class JenkinsJobChoiceFieldType
