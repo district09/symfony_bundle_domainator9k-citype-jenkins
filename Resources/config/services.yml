@@ -19,3 +19,4 @@ services:
         tags:
             - { name: kernel.event_listener, event: domainator.destroy, method: onDestroy, priority: 40 }
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService:
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\TemplateService:
