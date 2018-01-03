@@ -14,5 +14,8 @@ services:
         tags: [form.type]
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener:
         tags:
-            - { name: kernel.event_listener, event: domainator.build, method: onBuild, priority: 40 }
+          - { name: kernel.event_listener, event: domainator.build, method: onBuild, priority: 40 }
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\DestroyEventListener:
+        tags:
+            - { name: kernel.event_listener, event: domainator.destroy, method: onDestroy, priority: 40 }
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService:

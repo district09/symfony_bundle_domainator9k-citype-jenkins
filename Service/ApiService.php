@@ -94,6 +94,24 @@ class ApiService
     }
 
     /**
+     * @param $jobName
+     */
+    public function removeJob($jobName)
+    {
+        $client = $this->getClient();
+
+        $client->post(
+            $this->url . '/job/' . $jobName . '/doDelete',
+            [
+                'auth' => [
+                    $this->user,
+                    $this->token
+                ]
+            ]
+        );
+    }
+
+    /**
      * @param $script
      */
     public function executeGroovyscript($script)

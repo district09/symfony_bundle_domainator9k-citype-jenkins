@@ -4,21 +4,21 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
 
 
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
+use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Class BuildEventListener
+ * Class DestroyEventListener
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener
  */
-class BuildEventListener
+class DestroyEventListener
 {
 
     private $dataValueService;
@@ -38,7 +38,7 @@ class BuildEventListener
     /**
      * @param BuildEvent $event
      */
-    public function onBuild(BuildEvent $event)
+    public function onDestroy(DestroyEvent $event)
     {
         $applicationEnvironment = $event->getTask()->getApplicationEnvironment();
 
@@ -60,11 +60,11 @@ class BuildEventListener
                 ]
             );
 
-            // Check if a job with this name allready exists, create one if not
+            // Check if a job with this name allready exists, delete it if it does
             try {
                 $this->taskLoggerService->addLine(
                     sprintf(
-                        'Looking for jenkings job "%s"',
+                        'Looking for jenkins job "%s"',
                         $jobName
                     )
                 );
@@ -73,56 +73,20 @@ class BuildEventListener
                 if ($exception->getCode() == 404) {
                     $this->taskLoggerService->addLine(
                         sprintf(
-                            'Creating jenkins job "%s"',
+                            'Jenkins job "%s" not found',
                             $jobName
                         )
                     );
-                    $apiService->createJob($jenkinsServer->getTemplateName(), $jobName);
-                }
 
-                $this->taskLoggerService->addLine(
-                    sprintf(
-                        'Error on updating jenkins with message "%s"',
-                        $exception->getMessage()
-                    )
-                );
-            }
-
-            // Execute all groovy scripts after replacing the tokens with the actual values
-            /** @var JenkinsGroovyScript $jenkinsGroovyScript */
-            foreach ($jenkinsJob->getJenkinsGroovyScripts() as $jenkinsGroovyScript) {
-                $script = $this->templateService->replaceKeys(
-                    $jenkinsGroovyScript->getContent(),
-                    [
-                        'jenkins_job' => $jenkinsJob,
-                    ]
-                );
-
-                $script = $this->templateService->replaceKeys(
-                    $script,
-                    [
-                        'application' => $applicationEnvironment->getApplication(),
-                        'application_environment' => $applicationEnvironment,
-                    ]
-                );
-
-                try {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Executing groovy script "%s"',
-                            $jenkinsGroovyScript->getName()
-                        )
-                    );
-                    $apiService->executeGroovyscript($script);
-                } catch (ClientException $exception) {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Error on updating jenkins with message "%s"',
-                            $exception->getMessage()
-                        )
-                    );
+                    return;
                 }
             }
+            sprintf(
+                'Removing jenkins job "%s"',
+                $jobName
+            );
+
+            $apiService->removeJob($jobName);
         }
     }
 }
