@@ -107,7 +107,6 @@ class ApiService
                     $this->user,
                     $this->token
                 ],
-                'debug' => true,
                 'form_params' => [
                     'script' => $script
                 ]

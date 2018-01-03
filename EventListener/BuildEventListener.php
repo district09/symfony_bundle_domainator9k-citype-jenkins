@@ -89,7 +89,6 @@ class BuildEventListener
                 );
             }
 
-
             // Execute all groovy scripts after replacing the tokens with the actual values
             /** @var JenkinsGroovyScript $jenkinsGroovyScript */
             foreach ($jenkinsJob->getJenkinsGroovyScripts() as $jenkinsGroovyScript) {
@@ -97,7 +96,8 @@ class BuildEventListener
                     $jenkinsGroovyScript->getContent(),
                     [
                         'application' => $applicationEnvironment->getApplication(),
-                        'application_environment' => $applicationEnvironment
+                        'application_environment' => $applicationEnvironment,
+                        'jenkins_job' => $jenkinsJob,
                     ]
                 );
 

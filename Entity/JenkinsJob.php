@@ -4,6 +4,7 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
 
+use DigipolisGent\Domainator9k\CoreBundle\Entity\TokenTemplateInterface;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity()
  */
-class JenkinsJob
+class JenkinsJob implements TokenTemplateInterface
 {
 
     use IdentifiableTrait;
@@ -27,6 +28,14 @@ class JenkinsJob
      * @Assert\NotBlank()
      */
     protected $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="system_name",type="string")
+     * @Assert\NotBlank()
+     */
+    protected $systemName;
 
     /**
      * @var ArrayCollection
@@ -69,5 +78,28 @@ class JenkinsJob
     public function getJenkinsGroovyScripts()
     {
         return $this->jenkinsGroovyScripts->toArray();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSystemName()
+    {
+        return $this->systemName;
+    }
+
+    /**
+     * @param string $systemName
+     */
+    public function setSystemName(string $systemName)
+    {
+        $this->systemName = $systemName;
+    }
+
+    public static function getTokenReplacements(): array
+    {
+        return [
+            'systemName()' => 'getSystemName()'
+        ];
     }
 }

@@ -22,6 +22,7 @@ class JenkinsJobFormType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder->add('name');
+        $builder->add('systemName');
         $builder->add('jenkinsGroovyScripts',
             EntityType::class,
             [

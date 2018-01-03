@@ -18,6 +18,10 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
 
     private $entityManager;
 
+    /**
+     * JenkinsServerChoiceFieldType constructor.
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
@@ -68,6 +72,10 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
         return $value;
     }
 
+    /**
+     * @param $value
+     * @return null|object
+     */
     public function decodeValue($value)
     {
         return $this->entityManager->getRepository(JenkinsServer::class)->find($value);
