@@ -96,10 +96,17 @@ class JenkinsJob implements TokenTemplateInterface
         $this->systemName = $systemName;
     }
 
+    /**
+     * @return array
+     */
     public static function getTokenReplacements(): array
     {
         return [
             'systemName()' => 'getSystemName()'
         ];
+    }
+
+    public function __clone() {
+        $this->id = null;
     }
 }

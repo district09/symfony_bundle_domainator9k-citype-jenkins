@@ -64,6 +64,16 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
         $ids = json_decode($value, true);
 
+        $jenkinsJobRepository = $this->entityManager->getRepository(JenkinsJob::class);
+
+        $data = [];
+
+        if (!is_null($ids)) {
+            foreach ($ids as $id) {
+                $data[] = $jenkinsJobRepository->find($id);
+            }
+        }
+
         $originEntity = $this->getOriginEntity();
 
         if ($originEntity instanceof ApplicationEnvironment && is_null($originEntity->getId())) {
@@ -83,16 +93,10 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
             if (!is_null($settingDataValue)) {
                 $ids = json_decode($settingDataValue->getValue(), true);
-            }
-        }
 
-        $jenkinsJobRepository = $this->entityManager->getRepository(JenkinsJob::class);
-
-        $data = [];
-
-        if (!is_null($ids)) {
-            foreach ($ids as $id) {
-                $data[] = $jenkinsJobRepository->find($id);
+                foreach ($ids as $id) {
+                    $data[] = clone $jenkinsJobRepository->find($id);
+                }
             }
         }
 
