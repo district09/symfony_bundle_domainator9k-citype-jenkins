@@ -94,8 +94,10 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
             if (!is_null($settingDataValue)) {
                 $ids = json_decode($settingDataValue->getValue(), true);
 
-                foreach ($ids as $id) {
-                    $data[] = clone $jenkinsJobRepository->find($id);
+                if ($ids) {
+                    foreach ($ids as $id) {
+                        $data[] = clone $jenkinsJobRepository->find($id);
+                    }
                 }
             }
         }

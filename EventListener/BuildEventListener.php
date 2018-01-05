@@ -8,9 +8,9 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
@@ -53,7 +53,8 @@ class BuildEventListener
         foreach ($jenkinsJobs as $jenkinsJob) {
             // Replace all tokens in the jobname
             $jobName = $this->templateService->replaceKeys(
-                $jenkinsJob->getSystemName(),
+                $jenkinsJob,
+                'getSystemName',
                 [
                     'application' => $applicationEnvironment->getApplication(),
                     'application_environment' => $applicationEnvironment
@@ -92,15 +93,10 @@ class BuildEventListener
             /** @var JenkinsGroovyScript $jenkinsGroovyScript */
             foreach ($jenkinsJob->getJenkinsGroovyScripts() as $jenkinsGroovyScript) {
                 $script = $this->templateService->replaceKeys(
-                    $jenkinsGroovyScript->getContent(),
+                    $jenkinsGroovyScript,
+                    'getContent',
                     [
                         'jenkins_job' => $jenkinsJob,
-                    ]
-                );
-
-                $script = $this->templateService->replaceKeys(
-                    $script,
-                    [
                         'application' => $applicationEnvironment->getApplication(),
                         'application_environment' => $applicationEnvironment,
                     ]
