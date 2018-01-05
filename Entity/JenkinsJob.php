@@ -104,32 +104,10 @@ class JenkinsJob implements TemplateInterface
     /**
      * @return array
      */
-    public static function getTemplateEntities(): array
-    {
-        return [
-            'application' => AbstractApplication::class,
-            'application_environment' => ApplicationEnvironment::class,
-        ];
-    }
-
-    /**
-     * @return array
-     */
     public static function getTemplateReplacements(): array
     {
         return [
-            'application:nameCanonical()' => 'getNameCanonical()',
-            'application_environment:name()' => 'getEnvironment().getName()',
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public static function getTemplateMethods(): array
-    {
-        return [
-            'getSystemName',
+            'systemName()' => 'getSystemName()',
         ];
     }
 }

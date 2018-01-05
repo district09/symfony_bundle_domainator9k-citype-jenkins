@@ -53,8 +53,7 @@ class BuildEventListener
         foreach ($jenkinsJobs as $jenkinsJob) {
             // Replace all tokens in the jobname
             $jobName = $this->templateService->replaceKeys(
-                $jenkinsJob,
-                'getSystemName',
+                $jenkinsJob->getSystemName(),
                 [
                     'application' => $applicationEnvironment->getApplication(),
                     'application_environment' => $applicationEnvironment
@@ -93,8 +92,7 @@ class BuildEventListener
             /** @var JenkinsGroovyScript $jenkinsGroovyScript */
             foreach ($jenkinsJob->getJenkinsGroovyScripts() as $jenkinsGroovyScript) {
                 $script = $this->templateService->replaceKeys(
-                    $jenkinsGroovyScript,
-                    'getContent',
+                    $jenkinsGroovyScript->getContent(),
                     [
                         'jenkins_job' => $jenkinsJob,
                         'application' => $applicationEnvironment->getApplication(),
