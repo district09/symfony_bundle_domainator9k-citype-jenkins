@@ -66,4 +66,11 @@ class JenkinsGroovyScript
     {
         return $this->content;
     }
+
+    /**
+     * @param $content
+     */
+    public function setContent($content){
+        $this->content = $content;
+    }
 }
