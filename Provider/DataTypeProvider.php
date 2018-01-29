@@ -3,7 +3,6 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provider;
 
-
 use DigipolisGent\SettingBundle\Provider\DataTypeProviderInterface;
 
 /**

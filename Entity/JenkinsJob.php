@@ -3,7 +3,6 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
-
 use DigipolisGent\Domainator9k\CoreBundle\Entity\TemplateInterface;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
