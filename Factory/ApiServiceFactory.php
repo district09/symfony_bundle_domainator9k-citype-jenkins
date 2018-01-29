@@ -13,7 +13,8 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 class ApiServiceFactory
 {
 
-    public function create(JenkinsServer $jenkinsServer){
+    public function create(JenkinsServer $jenkinsServer)
+    {
         return new ApiService($jenkinsServer);
     }
 }

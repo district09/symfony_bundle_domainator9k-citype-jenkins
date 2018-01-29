@@ -83,7 +83,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
             if (!is_null($settingDataValue)) {
                 $jenkinsJobs = $this->decodeValue($settingDataValue->getValue());
-                foreach ($jenkinsJobs as $jenkinsJob){
+                foreach ($jenkinsJobs as $jenkinsJob) {
                     $data[] = clone $jenkinsJob;
                 }
             }
