@@ -1,5 +1,6 @@
 <?php
 
+
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class DigipolisGentDomainator9kCiTypesJenkinsExtension extends Extension
 {
+
     /**
      * {@inheritdoc}
      */

@@ -3,14 +3,13 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
 
-
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
@@ -24,15 +23,18 @@ class DestroyEventListener
     private $dataValueService;
     private $templateService;
     private $taskLoggerService;
+    private $apiServiceFactory;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
-        TaskLoggerService $taskLoggerService
+        TaskLoggerService $taskLoggerService,
+        ApiServiceFactory $apiServiceFactory
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
         $this->taskLoggerService = $taskLoggerService;
+        $this->apiServiceFactory = $apiServiceFactory;
     }
 
     /**
@@ -44,7 +46,7 @@ class DestroyEventListener
 
         /** @var JenkinsServer $jenkinsServer */
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');
-        $apiService = new ApiService($jenkinsServer);
+        $apiService = $this->apiServiceFactory->create($jenkinsServer);
 
         $jenkinsJobs = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_job');
 
@@ -81,9 +83,12 @@ class DestroyEventListener
                     return;
                 }
             }
-            sprintf(
-                'Removing jenkins job "%s"',
-                $jobName
+
+            $this->taskLoggerService->addLine(
+                sprintf(
+                    'Removing jenkins job "%s"',
+                    $jobName
+                )
             );
 
             $apiService->removeJob($jobName);

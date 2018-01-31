@@ -3,7 +3,6 @@
 
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type;
 
-
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -41,5 +40,4 @@ class JenkinsJobFormType extends AbstractType
             'data_class' => JenkinsJob::class,
         ]);
     }
-
 }

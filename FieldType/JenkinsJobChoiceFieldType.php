@@ -51,7 +51,10 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
      */
     public function getOptions($value): array
     {
-        $groovyScripts = $this->entityManager->getRepository(JenkinsGroovyScript::class)->findAll();
+        $ateRepository = $this->entityManager->getRepository(ApplicationTypeEnvironment::class);
+        $sdvRepository = $this->entityManager->getRepository(SettingDataValue::class);
+        $groovyScriptRepository = $this->entityManager->getRepository(JenkinsGroovyScript::class);
+        $atRepository = $this->entityManager->getRepository(ApplicationType::class);
 
         $options = [];
         $options['entry_type'] = JenkinsJobFormType::class;
@@ -60,44 +63,28 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $options['by_reference'] = false;
         $options['prototype'] = true;
         $options['prototype_data'] = new JenkinsJob();
-        $options['entry_options']['groovy_script_options'] = $groovyScripts;
+        $options['entry_options']['groovy_script_options'] = $groovyScriptRepository->findAll();
 
-        $ids = json_decode($value, true);
-
-        $jenkinsJobRepository = $this->entityManager->getRepository(JenkinsJob::class);
-
-        $data = [];
-
-        if (!is_null($ids)) {
-            foreach ($ids as $id) {
-                $data[] = $jenkinsJobRepository->find($id);
-            }
-        }
+        $data = $this->decodeValue($value);
 
         $originEntity = $this->getOriginEntity();
 
         if ($originEntity instanceof ApplicationEnvironment && is_null($originEntity->getId())) {
-            $applicationType = $this->entityManager->getRepository(ApplicationType::class)
-                ->findOneBy(['type' => $originEntity->getApplication()->getType()]);
+            $applicationType = $atRepository->findOneBy(['type' => $originEntity->getApplication()->getType()]);
 
             $criteria = [
                 'applicationType' => $applicationType,
                 'environment' => $originEntity->getEnvironment(),
             ];
 
-            $applicationTypeEnvironment = $this->entityManager
-                ->getRepository(ApplicationTypeEnvironment::class)->findOneBy($criteria);
+            $applicationTypeEnvironment = $ateRepository->findOneBy($criteria);
 
-            $settingDataValue = $this->entityManager->getRepository(SettingDataValue::class)
-                ->findOneByKey($applicationTypeEnvironment, self::getName());
+            $settingDataValue = $sdvRepository->findOneByKey($applicationTypeEnvironment, self::getName());
 
             if (!is_null($settingDataValue)) {
-                $ids = json_decode($settingDataValue->getValue(), true);
-
-                if ($ids) {
-                    foreach ($ids as $id) {
-                        $data[] = clone $jenkinsJobRepository->find($id);
-                    }
+                $jenkinsJobs = $this->decodeValue($settingDataValue->getValue());
+                foreach ($jenkinsJobs as $jenkinsJob) {
+                    $data[] = clone $jenkinsJob;
                 }
             }
         }
@@ -141,5 +128,4 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
         return $jenkinsJobs;
     }
-
 }

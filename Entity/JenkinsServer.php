@@ -1,5 +1,6 @@
 <?php
 
+
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity;
 
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
