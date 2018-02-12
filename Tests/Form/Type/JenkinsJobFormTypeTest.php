@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class JenkinsJobFormTypeTest extends TestCase
+class JenkinsJobFormTypeTest extends AbstractFormTypeTest
 {
 
     public function testConfigureOptions()
@@ -56,25 +56,5 @@ class JenkinsJobFormTypeTest extends TestCase
 
         $formType = new JenkinsJobFormType();
         $formType->buildForm($formBuilder,$options);
-    }
-
-    private function getFormBuilderMock()
-    {
-        $mock = $this
-            ->getMockBuilder(FormBuilderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        return $mock;
-    }
-
-    private function getOptionsResolverMock()
-    {
-        $mock = $this
-            ->getMockBuilder(OptionsResolver::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        return $mock;
     }
 }

@@ -70,7 +70,9 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $originEntity = $this->getOriginEntity();
 
         if ($originEntity instanceof ApplicationEnvironment && is_null($originEntity->getId())) {
-            $applicationType = $atRepository->findOneBy(['type' => $originEntity->getApplication()->getType()]);
+            $applicationType = $atRepository->findOneBy(
+                ['type' => $originEntity->getApplication()->getApplicationType()]
+            );
 
             $criteria = [
                 'applicationType' => $applicationType,
