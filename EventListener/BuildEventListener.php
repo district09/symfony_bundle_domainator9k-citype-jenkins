@@ -78,14 +78,14 @@ class BuildEventListener
                         )
                     );
                     $apiService->createJob($jenkinsServer->getTemplateName(), $jobName);
+                } else {
+                    $this->taskLoggerService->addLine(
+                        sprintf(
+                            'Error on updating jenkins with message "%s"',
+                            $exception->getMessage()
+                        )
+                    );
                 }
-
-                $this->taskLoggerService->addLine(
-                    sprintf(
-                        'Error on updating jenkins with message "%s"',
-                        $exception->getMessage()
-                    )
-                );
             }
 
             // Execute all groovy scripts after replacing the tokens with the actual values
