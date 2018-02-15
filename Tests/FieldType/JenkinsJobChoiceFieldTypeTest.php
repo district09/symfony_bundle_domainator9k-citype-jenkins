@@ -131,7 +131,7 @@ class JenkinsJobChoiceFieldTypeTest extends TestCase
     public function testGetOptionsForApplicationEnvironment()
     {
         $applicationType = new ApplicationType();
-        $applicationType->setType('foo');
+        $applicationType->setName('foo');
 
         $application = new FooApplication();
 
