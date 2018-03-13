@@ -54,13 +54,6 @@ class JenkinsServer
     protected $token;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="template_name",type="string")
-     */
-    protected $templateName;
-
-    /**
      * @return string
      */
     public function getJenkinsUrl()
@@ -158,21 +151,5 @@ class JenkinsServer
     public function setToken($token)
     {
         $this->token = $token;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTemplateName()
-    {
-        return $this->templateName;
-    }
-
-    /**
-     * @param string $templateName
-     */
-    public function setTemplateName($templateName)
-    {
-        $this->templateName = $templateName;
     }
 }

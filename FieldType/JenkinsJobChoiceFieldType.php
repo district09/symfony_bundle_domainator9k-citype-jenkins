@@ -63,7 +63,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $options['by_reference'] = false;
         $options['prototype'] = true;
         $options['prototype_data'] = new JenkinsJob();
-        $options['entry_options']['groovy_script_options'] = $groovyScriptRepository->findAll();
+        $options['entry_options']['groovy_script_options'] = $groovyScriptRepository->findBy([],['order' => 'asc']);
 
         $data = $this->decodeValue($value);
 

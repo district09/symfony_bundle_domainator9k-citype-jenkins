@@ -37,6 +37,14 @@ class JenkinsGroovyScript
      */
     protected $content;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="script_order",type="integer")
+     * @Assert\NotBlank()
+     */
+    protected $order;
+
 
     public function __construct()
     {
@@ -73,5 +81,21 @@ class JenkinsGroovyScript
     public function setContent($content)
     {
         $this->content = $content;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param int $order
+     */
+    public function setOrder(int $order)
+    {
+        $this->order = $order;
     }
 }

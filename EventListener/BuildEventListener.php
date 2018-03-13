@@ -51,43 +51,6 @@ class BuildEventListener
         // Loop over all jenkins jobs
         /** @var JenkinsJob $jenkinsJob */
         foreach ($jenkinsJobs as $jenkinsJob) {
-            // Replace all tokens in the jobname
-            $jobName = $this->templateService->replaceKeys(
-                $jenkinsJob->getSystemName(),
-                [
-                    'application' => $applicationEnvironment->getApplication(),
-                    'application_environment' => $applicationEnvironment
-                ]
-            );
-
-            // Check if a job with this name allready exists, create one if not
-            try {
-                $this->taskLoggerService->addLine(
-                    sprintf(
-                        'Looking for jenkings job "%s"',
-                        $jobName
-                    )
-                );
-                $apiService->getJob($jobName);
-            } catch (ClientException $exception) {
-                if ($exception->getCode() == 404) {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Creating jenkins job "%s"',
-                            $jobName
-                        )
-                    );
-                    $apiService->createJob($jenkinsServer->getTemplateName(), $jobName);
-                } else {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Error on updating jenkins with message "%s"',
-                            $exception->getMessage()
-                        )
-                    );
-                }
-            }
-
             // Execute all groovy scripts after replacing the tokens with the actual values
             /** @var JenkinsGroovyScript $jenkinsGroovyScript */
             foreach ($jenkinsJob->getJenkinsGroovyScripts() as $jenkinsGroovyScript) {

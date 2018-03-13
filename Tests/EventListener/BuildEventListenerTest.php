@@ -51,22 +51,8 @@ class BuildEventListenerTest extends TestCase
             ->method('getValue')
             ->willReturn($jenkinsJobs);
 
-        $templateService
-            ->expects($this->at(0))
-            ->method('replaceKeys')
-            ->willReturn('my_job_name');
-
         $apiService
             ->expects($this->at(0))
-            ->method('getJob');
-
-        $templateService
-            ->expects($this->at(1))
-            ->method('replaceKeys')
-            ->willReturn('my-script');
-
-        $apiService
-            ->expects($this->at(1))
             ->method('executeGroovyscript')
             ->willReturnCallback(function (){
                 throw new ClientException('This is an exception.', $this->getRequestMock());
@@ -133,10 +119,6 @@ class BuildEventListenerTest extends TestCase
 
                 throw $exception;
             });
-
-        $apiService
-            ->expects($this->at(1))
-            ->method('createJob');
 
         $applicationEnvironment = new ApplicationEnvironment();
 
