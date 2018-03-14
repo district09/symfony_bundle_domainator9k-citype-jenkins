@@ -53,9 +53,9 @@ class BuildEventListener
         foreach ($jenkinsJobs as $jenkinsJob) {
             // Execute all groovy scripts after replacing the tokens with the actual values
             /** @var JenkinsGroovyScripts $jenkinsGroovyScript[] */
-            $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts()
+            $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts();
             usort($jenkinkGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
-                reutrn $a->getOrder() - $b->getOrder();
+                return $a->getOrder() - $b->getOrder();
             });
             foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
                 $script = $this->templateService->replaceKeys(
