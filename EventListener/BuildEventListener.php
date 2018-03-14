@@ -54,7 +54,7 @@ class BuildEventListener
             // Execute all groovy scripts after replacing the tokens with the actual values
             /** @var JenkinsGroovyScripts $jenkinsGroovyScript[] */
             $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts();
-            usort($jenkinkGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
+            usort($jenkinsGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
                 return $a->getOrder() - $b->getOrder();
             });
             foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
