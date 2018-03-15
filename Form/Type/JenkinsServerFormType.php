@@ -19,7 +19,6 @@ class JenkinsServerFormType extends AbstractType
         $builder->add('port');
         $builder->add('user');
         $builder->add('token');
-        $builder->add('templateName');
     }
 
     public function configureOptions(OptionsResolver $resolver)
