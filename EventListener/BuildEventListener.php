@@ -6,6 +6,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
@@ -41,6 +42,10 @@ class BuildEventListener
      */
     public function onBuild(BuildEvent $event)
     {
+        if ($event->getTask()->getStatus() == Task::STATUS_FAILED) {
+            return;
+        }
+
         $applicationEnvironment = $event->getTask()->getApplicationEnvironment();
 
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');
@@ -82,6 +87,9 @@ class BuildEventListener
                             $exception->getMessage()
                         )
                     );
+
+                    $this->taskLoggerService->endTask();
+                    return;
                 }
             }
         }
