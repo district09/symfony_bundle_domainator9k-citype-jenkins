@@ -32,7 +32,6 @@ class JenkinsServerFormTypeTest extends AbstractFormTypeTest
             'port',
             'user',
             'token',
-            'templateName',
         ];
 
         $index = 0;
