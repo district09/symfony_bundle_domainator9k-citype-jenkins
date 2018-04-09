@@ -75,8 +75,9 @@ class BuildEventListener
                 try {
                     $this->taskLoggerService->addLine(
                         sprintf(
-                            'Executing groovy script "%s"',
-                            $jenkinsGroovyScript->getName()
+                            'Executing groovy script "%s":' . "\n%s",
+                            $jenkinsGroovyScript->getName(),
+                            $script
                         )
                     );
                     $apiService->executeGroovyscript($script);
