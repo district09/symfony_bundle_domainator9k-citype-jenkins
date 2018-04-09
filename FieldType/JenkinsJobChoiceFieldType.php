@@ -100,7 +100,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
      * @param $value
      * @return string
      */
-    public function encodeValue($value): string
+    public function encodeValue($value): ?string
     {
         $jenkinsJobIds = [];
 

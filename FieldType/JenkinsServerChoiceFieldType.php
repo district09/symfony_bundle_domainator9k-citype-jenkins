@@ -66,7 +66,7 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
      * @param $value
      * @return string
      */
-    public function encodeValue($value): string
+    public function encodeValue($value): ?string
     {
         return $value;
     }
