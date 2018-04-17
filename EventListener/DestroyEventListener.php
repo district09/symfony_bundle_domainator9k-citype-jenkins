@@ -10,6 +10,7 @@ use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TokenService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
@@ -24,17 +25,20 @@ class DestroyEventListener
     private $templateService;
     private $taskLoggerService;
     private $apiServiceFactory;
+    private $tokenService;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
         TaskLoggerService $taskLoggerService,
-        ApiServiceFactory $apiServiceFactory
+        ApiServiceFactory $apiServiceFactory,
+        TokenService $tokenService
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
         $this->taskLoggerService = $taskLoggerService;
         $this->apiServiceFactory = $apiServiceFactory;
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -57,6 +61,7 @@ class DestroyEventListener
             $jobName = $this->templateService->replaceKeys(
                 $jenkinsJob->getSystemName(),
                 [
+                    'token' => $this->tokenService,
                     'application' => $applicationEnvironment->getApplication(),
                     'application_environment' => $applicationEnvironment
                 ]

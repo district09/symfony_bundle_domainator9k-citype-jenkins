@@ -13,6 +13,7 @@ use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TokenService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use Doctrine\Common\Collections\ArrayCollection;
 use GuzzleHttp\Exception\ClientException;
@@ -30,6 +31,7 @@ class DestroyEventListenerTest extends TestCase
         $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
+        $tokenService = $this->getTokenServiceMock();
 
         $jenkinsServer = new JenkinsServer();
 
@@ -71,7 +73,8 @@ class DestroyEventListenerTest extends TestCase
             $dataValueService,
             $templateService,
             $taskLoggerService,
-            $apiServiceFactory
+            $apiServiceFactory,
+            $tokenService
         );
         $eventListener->onDestroy($destroyEvent);
     }
@@ -83,6 +86,7 @@ class DestroyEventListenerTest extends TestCase
         $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
+        $tokenService = $this->getTokenServiceMock();
 
         $jenkinsServer = new JenkinsServer();
 
@@ -120,7 +124,8 @@ class DestroyEventListenerTest extends TestCase
             $dataValueService,
             $templateService,
             $taskLoggerService,
-            $apiServiceFactory
+            $apiServiceFactory,
+            $tokenService
         );
         $eventListener->onDestroy($destroyEvent);
     }
@@ -202,5 +207,12 @@ class DestroyEventListenerTest extends TestCase
             ->willReturn(404);
 
         return $mock;
+    }
+
+    private function getTokenServiceMock()
+    {
+        return $this->getMockBuilder(TokenService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

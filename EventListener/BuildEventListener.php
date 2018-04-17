@@ -10,6 +10,7 @@ use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TokenService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
@@ -24,17 +25,20 @@ class BuildEventListener
     private $templateService;
     private $taskLoggerService;
     private $apiServiceFactory;
+    private $tokenService;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
         TaskLoggerService $taskLoggerService,
-        ApiServiceFactory $apiServiceFactory
+        ApiServiceFactory $apiServiceFactory,
+        TokenService $tokenService
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
         $this->taskLoggerService = $taskLoggerService;
         $this->apiServiceFactory = $apiServiceFactory;
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -66,6 +70,7 @@ class BuildEventListener
                 $script = $this->templateService->replaceKeys(
                     $jenkinsGroovyScript->getContent(),
                     [
+                        'token' => $this->tokenService,
                         'jenkins_job' => $jenkinsJob,
                         'application' => $applicationEnvironment->getApplication(),
                         'application_environment' => $applicationEnvironment,
