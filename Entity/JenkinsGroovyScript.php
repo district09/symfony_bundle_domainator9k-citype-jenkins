@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity()
  * @UniqueEntity(fields={"name"})
+ * @ORM\Table(name="jenkins_groovy_script")
  */
 class JenkinsGroovyScript
 {

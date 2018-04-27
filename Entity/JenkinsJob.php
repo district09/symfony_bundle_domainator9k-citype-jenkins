@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity
  *
  * @ORM\Entity()
+ * @ORM\Table(name="jenkins_job")
  */
 class JenkinsJob implements TemplateInterface
 {
