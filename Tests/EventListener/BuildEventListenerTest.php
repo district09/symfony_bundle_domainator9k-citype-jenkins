@@ -12,7 +12,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +28,7 @@ class BuildEventListenerTest extends TestCase
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskLoggerService = $this->getTaskLoggerService();
+        $taskService = $this->getTaskService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -70,7 +70,7 @@ class BuildEventListenerTest extends TestCase
         $eventListener = new BuildEventListener(
             $dataValueService,
             $templateService,
-            $taskLoggerService,
+            $taskService,
             $apiServiceFactory
         );
         $eventListener->onBuild($event);
@@ -80,7 +80,7 @@ class BuildEventListenerTest extends TestCase
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskLoggerService = $this->getTaskLoggerService();
+        $taskService = $this->getTaskService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -131,7 +131,7 @@ class BuildEventListenerTest extends TestCase
         $eventListener = new BuildEventListener(
             $dataValueService,
             $templateService,
-            $taskLoggerService,
+            $taskService,
             $apiServiceFactory
         );
         $eventListener->onBuild($event);
@@ -182,10 +182,10 @@ class BuildEventListenerTest extends TestCase
         return $mock;
     }
 
-    private function getTaskLoggerService()
+    private function getTaskService()
     {
         $mock = $this
-            ->getMockBuilder(TaskLoggerService::class)
+            ->getMockBuilder(TaskService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
