@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
@@ -8,13 +7,14 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
 /**
  * Class DestroyEventListener
+ *
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener
  */
 class DestroyEventListener
@@ -22,18 +22,18 @@ class DestroyEventListener
 
     private $dataValueService;
     private $templateService;
-    private $taskLoggerService;
+    private $taskService;
     private $apiServiceFactory;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
-        TaskLoggerService $taskLoggerService,
+        TaskService $taskService,
         ApiServiceFactory $apiServiceFactory
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
-        $this->taskLoggerService = $taskLoggerService;
+        $this->taskService = $taskService;
         $this->apiServiceFactory = $apiServiceFactory;
     }
 
@@ -42,18 +42,19 @@ class DestroyEventListener
      */
     public function onDestroy(DestroyEvent $event)
     {
-        $applicationEnvironment = $event->getTask()->getApplicationEnvironment();
+        $task = $event->getTask();
+        $applicationEnvironment = $task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');
-        $apiService = $this->apiServiceFactory->create($jenkinsServer);
 
+        /** @var JenkinsJob[] $jenkinsJobs */
         $jenkinsJobs = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_job');
 
-        // Loop over all jenkins jobs
-        /** @var JenkinsJob $jenkinsJob */
+        $apiService = $this->apiServiceFactory->create($jenkinsServer);
+
         foreach ($jenkinsJobs as $jenkinsJob) {
-            // Replace all tokens in the jobname
+            // Replace all tokens in the job name.
             $jobName = $this->templateService->replaceKeys(
                 $jenkinsJob->getSystemName(),
                 [
@@ -62,36 +63,41 @@ class DestroyEventListener
                 ]
             );
 
-            // Check if a job with this name allready exists, delete it if it does
-            try {
-                $this->taskLoggerService->addLine(
+            $this->taskService
+                ->addLogHeader(
+                    $task,
                     sprintf(
-                        'Looking for jenkins job "%s"',
+                        'Removing Jenkins job "%s"',
                         $jobName
-                    )
+                    ),
+                    0,
+                    true
                 );
-                $apiService->getJob($jobName);
-            } catch (ClientException $exception) {
-                if ($exception->getCode() == 404) {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Jenkins job "%s" not found',
-                            $jobName
-                        )
-                    );
 
-                    return;
+            try {
+                // Check if the job exists.
+                try {
+                    $apiService->getJob($jobName);
+                } catch (ClientException $ex) {
+                    if ($ex->getCode() == 404) {
+                        $this->taskService->addWarningLogMessage($task, 'Job not found.');
+                        continue;
+                    }
+
+                    throw $ex;
                 }
+
+                // Remove it.
+                $apiService->removeJob($jobName);
+
+                $this->taskService->addSuccessLogMessage($task, 'Job removed.');
+            } catch (ClientException $exception) {
+                $this->taskService
+                    ->addErrorLogMessage($task, $ex->getMessage())
+                    ->addFailedLogMessage($task, 'Removal failed.');
+
+                $event->stopPropagation();
             }
-
-            $this->taskLoggerService->addLine(
-                sprintf(
-                    'Removing jenkins job "%s"',
-                    $jobName
-                )
-            );
-
-            $apiService->removeJob($jobName);
         }
     }
 }

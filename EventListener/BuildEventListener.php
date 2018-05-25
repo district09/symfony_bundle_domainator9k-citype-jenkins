@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
@@ -8,13 +7,14 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
 /**
  * Class BuildEventListener
+ *
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener
  */
 class BuildEventListener
@@ -22,18 +22,18 @@ class BuildEventListener
 
     private $dataValueService;
     private $templateService;
-    private $taskLoggerService;
+    private $taskService;
     private $apiServiceFactory;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
-        TaskLoggerService $taskLoggerService,
+        TaskService $taskService,
         ApiServiceFactory $apiServiceFactory
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
-        $this->taskLoggerService = $taskLoggerService;
+        $this->taskService = $taskService;
         $this->apiServiceFactory = $apiServiceFactory;
     }
 
@@ -42,27 +42,26 @@ class BuildEventListener
      */
     public function onBuild(BuildEvent $event)
     {
-        if ($event->getTask()->getStatus() == Task::STATUS_FAILED) {
-            return;
-        }
+        $task = $event->getTask();
+        $applicationEnvironment = $task->getApplicationEnvironment();
 
-        $applicationEnvironment = $event->getTask()->getApplicationEnvironment();
-
+        /** @var JenkinsServer $jenkinsServer */
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');
-        $apiService = $this->apiServiceFactory->create($jenkinsServer);
 
+        /** @var JenkinsJob[] $jenkinsJobs */
         $jenkinsJobs = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_job');
 
-        // Loop over all jenkins jobs
-        /** @var JenkinsJob $jenkinsJob */
+        $apiService = $this->apiServiceFactory->create($jenkinsServer);
+
         foreach ($jenkinsJobs as $jenkinsJob) {
-            // Execute all groovy scripts after replacing the tokens with the actual values
-            /** @var JenkinsGroovyScripts $jenkinsGroovyScript[] */
+            // Get and sort the Groovy scripts.
             $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts();
             usort($jenkinsGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
                 return $a->getOrder() - $b->getOrder();
             });
+
             foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
+                // Replace all tokens in the script.
                 $script = $this->templateService->replaceKeys(
                     $jenkinsGroovyScript->getContent(),
                     [
@@ -72,24 +71,27 @@ class BuildEventListener
                     ]
                 );
 
-                try {
-                    $this->taskLoggerService->addLine(
+                // Execute the script.
+                $this->taskService
+                    ->addLogHeader(
+                        $task,
                         sprintf(
-                            'Executing groovy script "%s":' . "\n%s",
-                            $jenkinsGroovyScript->getName(),
-                            $script
+                            'Executing Groovy script "%s"',
+                            $jenkinsGroovyScript->getName()
                         )
-                    );
-                    $apiService->executeGroovyscript($script);
-                } catch (ClientException $exception) {
-                    $this->taskLoggerService->addLine(
-                        sprintf(
-                            'Error on updating jenkins with message "%s"',
-                            $exception->getMessage()
-                        )
-                    );
+                    )
+                    ->addInfoLogMessage($task, $script);
 
-                    $this->taskLoggerService->endTask();
+                try {
+                    $apiService->executeGroovyscript($script);
+
+                    $this->taskService->addSuccessLogMessage($task, 'Execution succeeded.');
+                } catch (ClientException $ex) {
+                    $this->taskService
+                        ->addErrorLogMessage($task, $ex->getMessage())
+                        ->addFailedLogMessage($task, 'Execution failed.');
+
+                    $event->stopPropagation();
                     return;
                 }
             }
