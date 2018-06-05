@@ -102,5 +102,4 @@ class JenkinsJob implements TemplateInterface
     {
         $this->id = null;
     }
-
 }
