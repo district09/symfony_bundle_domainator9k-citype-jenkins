@@ -1,23 +1,24 @@
 <?php
 
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
+use DigipolisGent\Domainator9k\CoreBundle\Provisioner\ProvisionerInterface;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Class BuildEventListener
+ * Class BuildProvisioner
  *
- * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener
+ * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner
  */
-class BuildEventListener
+class BuildProvisioner implements ProvisionerInterface
 {
 
     private $dataValueService;
@@ -38,11 +39,10 @@ class BuildEventListener
     }
 
     /**
-     * @param BuildEvent $event
+     * @param Task $task
      */
-    public function onBuild(BuildEvent $event)
+    public function run(Task $task)
     {
-        $task = $event->getTask();
         $applicationEnvironment = $task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
@@ -91,7 +91,7 @@ class BuildEventListener
                         ->addErrorLogMessage($task, $ex->getMessage())
                         ->addFailedLogMessage($task, 'Execution failed.');
 
-                    $event->stopPropagation();
+                    $task->setFailed();
                     return;
                 }
             }

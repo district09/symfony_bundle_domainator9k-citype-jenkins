@@ -1,17 +1,16 @@
 <?php
 
 
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
@@ -21,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class BuildEventListenerTest extends TestCase
+class BuildProvisionerTest extends TestCase
 {
 
     public function testOnBuildWithExistingJob()
@@ -65,15 +64,13 @@ class BuildEventListenerTest extends TestCase
         $task->setType(Task::TYPE_BUILD);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $event = new BuildEvent($task);
-
-        $eventListener = new BuildEventListener(
+        $provisioner = new BuildProvisioner (
             $dataValueService,
             $templateService,
             $taskService,
             $apiServiceFactory
         );
-        $eventListener->onBuild($event);
+        $provisioner->run($task);
     }
 
     public function testOnBuildWithNonExistingJob()
@@ -126,15 +123,13 @@ class BuildEventListenerTest extends TestCase
         $task->setType(Task::TYPE_BUILD);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $event = new BuildEvent($task);
-
-        $eventListener = new BuildEventListener(
+        $provisioner = new BuildProvisioner(
             $dataValueService,
             $templateService,
             $taskService,
             $apiServiceFactory
         );
-        $eventListener->onBuild($event);
+        $provisioner->run($task);
     }
 
     private function getApiServiceMock()

@@ -1,12 +1,11 @@
 <?php
 
-
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\DestroyEventListener;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\DestroyProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
@@ -20,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class DestroyEventListenerTest extends TestCase
+class DestroyProvisionerTest extends TestCase
 {
 
     public function testOnDestroyWithException()
@@ -65,15 +64,13 @@ class DestroyEventListenerTest extends TestCase
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
+        $provisioner = new DestroyProvisioner(
             $dataValueService,
             $templateService,
             $taskService,
             $apiServiceFactory
         );
-        $eventListener->onDestroy($destroyEvent);
+        $provisioner->run($task);;
     }
 
     public function testOnDestroyWithoutException()
@@ -114,15 +111,13 @@ class DestroyEventListenerTest extends TestCase
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
+        $provisioner = new DestroyProvisioner(
             $dataValueService,
             $templateService,
             $taskService,
             $apiServiceFactory
         );
-        $eventListener->onDestroy($destroyEvent);
+        $provisioner->run($task);;
     }
 
     private function getRequestMock()

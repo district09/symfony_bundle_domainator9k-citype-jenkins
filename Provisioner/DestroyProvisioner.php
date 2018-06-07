@@ -1,23 +1,23 @@
 <?php
 
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
-use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
+use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
+use DigipolisGent\Domainator9k\CoreBundle\Provisioner\ProvisionerInterface;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Class DestroyEventListener
+ * Class DestroyProvisioner
  *
- * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener
+ * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner
  */
-class DestroyEventListener
+class DestroyProvisioner implements ProvisionerInterface
 {
 
     private $dataValueService;
@@ -38,11 +38,10 @@ class DestroyEventListener
     }
 
     /**
-     * @param BuildEvent $event
+     * @param Task $task
      */
-    public function onDestroy(DestroyEvent $event)
+    public function run(Task $task)
     {
-        $task = $event->getTask();
         $applicationEnvironment = $task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
@@ -96,7 +95,7 @@ class DestroyEventListener
                     ->addErrorLogMessage($task, $ex->getMessage())
                     ->addFailedLogMessage($task, 'Removal failed.');
 
-                $event->stopPropagation();
+                $task->setFailed();
             }
         }
     }

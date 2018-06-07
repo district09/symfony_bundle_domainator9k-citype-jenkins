@@ -12,10 +12,10 @@ services:
             - { name: field_type}
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType:
         tags: [form.type]
-    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener:
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner:
         tags:
-          - { name: kernel.event_listener, event: domainator.build, method: onBuild, priority: 40 }
-    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\DestroyEventListener:
+          - { name: domainator.provisioner.build, priority: 40 }
+    DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\DestroyProvisioner:
         tags:
-            - { name: kernel.event_listener, event: domainator.destroy, method: onDestroy, priority: 90 }
+            - { name: domainator.provisioner.destroy, priority: 90 }
     DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory:
