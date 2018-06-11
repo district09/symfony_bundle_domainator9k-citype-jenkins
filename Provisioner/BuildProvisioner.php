@@ -8,7 +8,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Provisioner\ProvisionerInterface;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use GuzzleHttp\Exception\ClientException;
@@ -23,18 +23,18 @@ class BuildProvisioner implements ProvisionerInterface
 
     private $dataValueService;
     private $templateService;
-    private $taskService;
+    private $taskLoggerService;
     private $apiServiceFactory;
 
     public function __construct(
         DataValueService $dataValueService,
         TemplateService $templateService,
-        TaskService $taskService,
+        TaskLoggerService $taskLoggerService,
         ApiServiceFactory $apiServiceFactory
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;
-        $this->taskService = $taskService;
+        $this->taskLoggerService = $taskLoggerService;
         $this->apiServiceFactory = $apiServiceFactory;
     }
 
@@ -72,7 +72,7 @@ class BuildProvisioner implements ProvisionerInterface
                 );
 
                 // Execute the script.
-                $this->taskService
+                $this->taskLoggerService
                     ->addLogHeader(
                         $task,
                         sprintf(
@@ -85,9 +85,9 @@ class BuildProvisioner implements ProvisionerInterface
                 try {
                     $apiService->executeGroovyscript($script);
 
-                    $this->taskService->addSuccessLogMessage($task, 'Execution succeeded.');
+                    $this->taskLoggerService->addSuccessLogMessage($task, 'Execution succeeded.');
                 } catch (ClientException $ex) {
-                    $this->taskService
+                    $this->taskLoggerService
                         ->addErrorLogMessage($task, $ex->getMessage())
                         ->addFailedLogMessage($task, 'Execution failed.');
 
@@ -96,5 +96,10 @@ class BuildProvisioner implements ProvisionerInterface
                 }
             }
         }
+    }
+
+    public function getName()
+    {
+        return 'Jenkins jobs';
     }
 }
