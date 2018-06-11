@@ -7,7 +7,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Provisioner\ProvisionerInterface;
+use DigipolisGent\Domainator9k\CoreBundle\Provisioner\AbstractProvisioner;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
@@ -18,7 +18,7 @@ use GuzzleHttp\Exception\ClientException;
  *
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner
  */
-class BuildProvisioner implements ProvisionerInterface
+class BuildProvisioner extends AbstractProvisioner
 {
 
     private $dataValueService;
@@ -38,13 +38,10 @@ class BuildProvisioner implements ProvisionerInterface
         $this->apiServiceFactory = $apiServiceFactory;
     }
 
-    /**
-     * @param Task $task
-     */
-    public function run(Task $task)
+
+    protected function doRun()
     {
-        $this->task = $task;
-        $applicationEnvironment = $task->getApplicationEnvironment();
+        $applicationEnvironment = $this->task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');

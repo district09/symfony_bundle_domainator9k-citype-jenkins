@@ -70,7 +70,8 @@ class BuildProvisionerTest extends TestCase
             $taskLoggerService,
             $apiServiceFactory
         );
-        $provisioner->run($task);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     public function testOnBuildWithNonExistingJob()
@@ -129,7 +130,8 @@ class BuildProvisionerTest extends TestCase
             $taskLoggerService,
             $apiServiceFactory
         );
-        $provisioner->run($task);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     private function getApiServiceMock()
