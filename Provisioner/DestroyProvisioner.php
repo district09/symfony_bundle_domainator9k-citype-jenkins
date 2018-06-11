@@ -42,7 +42,8 @@ class DestroyProvisioner implements ProvisionerInterface
      */
     public function run(Task $task)
     {
-        $applicationEnvironment = $task->getApplicationEnvironment();
+        $this->task = $task;
+        $applicationEnvironment = $this->task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
         $jenkinsServer = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_server');
@@ -50,54 +51,60 @@ class DestroyProvisioner implements ProvisionerInterface
         /** @var JenkinsJob[] $jenkinsJobs */
         $jenkinsJobs = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_job');
 
-        $apiService = $this->apiServiceFactory->create($jenkinsServer);
+        $this->apiService = $this->apiServiceFactory->create($jenkinsServer);
 
         foreach ($jenkinsJobs as $jenkinsJob) {
-            // Replace all tokens in the job name.
-            $jobName = $this->templateService->replaceKeys(
-                $jenkinsJob->getSystemName(),
-                [
-                    'application' => $applicationEnvironment->getApplication(),
-                    'application_environment' => $applicationEnvironment
-                ]
-            );
-
-            $this->taskLoggerService
-                ->addLogHeader(
-                    $task,
-                    sprintf(
-                        'Removing Jenkins job "%s"',
-                        $jobName
-                    ),
-                    0,
-                    true
-                );
-
             try {
-                // Check if the job exists.
-                try {
-                    $apiService->getJob($jobName);
-                } catch (ClientException $ex) {
-                    if ($ex->getCode() == 404) {
-                        $this->taskLoggerService->addWarningLogMessage($task, 'Job not found.');
-                        continue;
-                    }
-
-                    throw $ex;
-                }
-
-                // Remove it.
-                $apiService->removeJob($jobName);
-
-                $this->taskLoggerService->addSuccessLogMessage($task, 'Job removed.');
+                $this->removeJenkinsJob($jenkinsJob);
             } catch (ClientException $exception) {
                 $this->taskLoggerService
-                    ->addErrorLogMessage($task, $ex->getMessage())
-                    ->addFailedLogMessage($task, 'Removal failed.');
+                    ->addErrorLogMessage($this->task, $exception->getMessage())
+                    ->addFailedLogMessage($this->task, 'Removal failed.');
 
-                $task->setFailed();
+                $this->task->setFailed();
+                return;
             }
         }
+    }
+
+    protected function removeJenkinsJob(JenkinsJob $jenkinsJob)
+    {
+        $applicationEnvironment = $this->task->getApplicationEnvironment();
+        // Replace all tokens in the job name.
+        $jobName = $this->templateService->replaceKeys(
+            $jenkinsJob->getSystemName(),
+            [
+                'application' => $applicationEnvironment->getApplication(),
+                'application_environment' => $applicationEnvironment
+            ]
+        );
+
+        $this->taskLoggerService
+            ->addLogHeader(
+                $this->task,
+                sprintf(
+                    'Removing Jenkins job "%s"',
+                    $jobName
+                ),
+                0,
+                true
+            );
+
+        // Check if the job exists.
+        try {
+            $this->apiService->getJob($jobName);
+        } catch (ClientException $ex) {
+            if ($ex->getCode() == 404) {
+                $this->taskLoggerService->addWarningLogMessage($this->task, 'Job not found.');
+                return;
+            }
+
+            throw $ex;
+        }
+
+        // Remove it.
+        $this->apiService->removeJob($jobName);
+        $this->taskLoggerService->addSuccessLogMessage($this->task, 'Job removed.');
     }
 
     public function getName()

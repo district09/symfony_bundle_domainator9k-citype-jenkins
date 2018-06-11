@@ -43,6 +43,7 @@ class BuildProvisioner implements ProvisionerInterface
      */
     public function run(Task $task)
     {
+        $this->task = $task;
         $applicationEnvironment = $task->getApplicationEnvironment();
 
         /** @var JenkinsServer $jenkinsServer */
@@ -51,50 +52,58 @@ class BuildProvisioner implements ProvisionerInterface
         /** @var JenkinsJob[] $jenkinsJobs */
         $jenkinsJobs = $this->dataValueService->getValue($applicationEnvironment, 'jenkins_job');
 
-        $apiService = $this->apiServiceFactory->create($jenkinsServer);
+        $this->apiService = $this->apiServiceFactory->create($jenkinsServer);
 
         foreach ($jenkinsJobs as $jenkinsJob) {
-            // Get and sort the Groovy scripts.
-            $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts();
-            usort($jenkinsGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
-                return $a->getOrder() - $b->getOrder();
-            });
-
-            foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
-                // Replace all tokens in the script.
-                $script = $this->templateService->replaceKeys(
-                    $jenkinsGroovyScript->getContent(),
-                    [
-                        'jenkins_job' => $jenkinsJob,
-                        'application' => $applicationEnvironment->getApplication(),
-                        'application_environment' => $applicationEnvironment,
-                    ]
-                );
-
-                // Execute the script.
+            try {
+                $this->createJenkinsJob($jenkinsJob);
+            } catch (ClientException $ex) {
                 $this->taskLoggerService
-                    ->addLogHeader(
-                        $task,
-                        sprintf(
-                            'Executing Groovy script "%s"',
-                            $jenkinsGroovyScript->getName()
-                        )
-                    )
-                    ->addInfoLogMessage($task, $script);
+                    ->addErrorLogMessage($this->task, $ex->getMessage())
+                    ->addFailedLogMessage($this->task, 'Execution failed.');
 
-                try {
-                    $apiService->executeGroovyscript($script);
-
-                    $this->taskLoggerService->addSuccessLogMessage($task, 'Execution succeeded.');
-                } catch (ClientException $ex) {
-                    $this->taskLoggerService
-                        ->addErrorLogMessage($task, $ex->getMessage())
-                        ->addFailedLogMessage($task, 'Execution failed.');
-
-                    $task->setFailed();
-                    return;
-                }
+                $this->task->setFailed();
+                return;
             }
+        }
+    }
+
+    /**
+     * @param JenkinsJob $jenkinsJob
+     */
+    protected function createJenkinsJob(JenkinsJob $jenkinsJob)
+    {
+        $applicationEnvironment = $this->task->getApplicationEnvironment();
+        // Get and sort the Groovy scripts.
+        $jenkinsGroovyScripts = $jenkinsJob->getJenkinsGroovyScripts();
+        usort($jenkinsGroovyScripts, function (JenkinsGroovyScript $a, JenkinsGroovyScript $b) {
+            return $a->getOrder() - $b->getOrder();
+        });
+
+        foreach ($jenkinsGroovyScripts as $jenkinsGroovyScript) {
+            // Replace all tokens in the script.
+            $script = $this->templateService->replaceKeys(
+                $jenkinsGroovyScript->getContent(),
+                [
+                    'jenkins_job' => $jenkinsJob,
+                    'application' => $applicationEnvironment->getApplication(),
+                    'application_environment' => $applicationEnvironment,
+                ]
+            );
+
+            // Execute the script.
+            $this->taskLoggerService
+                ->addLogHeader(
+                    $this->task,
+                    sprintf(
+                        'Executing Groovy script "%s"',
+                        $jenkinsGroovyScript->getName()
+                    )
+                )
+                ->addInfoLogMessage($this->task, $script);
+
+            $this->apiService->executeGroovyscript($script);
+            $this->taskLoggerService->addSuccessLogMessage($this->task, 'Execution succeeded.');
         }
     }
 
