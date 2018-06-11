@@ -11,7 +11,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -27,7 +27,7 @@ class BuildProvisionerTest extends TestCase
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskService();
+        $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -67,7 +67,7 @@ class BuildProvisionerTest extends TestCase
         $provisioner = new BuildProvisioner (
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
         $provisioner->run($task);
@@ -77,7 +77,7 @@ class BuildProvisionerTest extends TestCase
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskService();
+        $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -126,7 +126,7 @@ class BuildProvisionerTest extends TestCase
         $provisioner = new BuildProvisioner(
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
         $provisioner->run($task);
@@ -177,10 +177,10 @@ class BuildProvisionerTest extends TestCase
         return $mock;
     }
 
-    private function getTaskService()
+    private function getTaskLoggerService()
     {
         $mock = $this
-            ->getMockBuilder(TaskService::class)
+            ->getMockBuilder(TaskLoggerService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
