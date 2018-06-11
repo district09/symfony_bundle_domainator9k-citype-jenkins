@@ -6,7 +6,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
-use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
+use DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException;
 use DigipolisGent\Domainator9k\CoreBundle\Provisioner\AbstractProvisioner;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
@@ -59,8 +59,7 @@ class BuildProvisioner extends AbstractProvisioner
                     ->addErrorLogMessage($this->task, $ex->getMessage())
                     ->addFailedLogMessage($this->task, 'Execution failed.');
 
-                $this->task->setFailed();
-                return;
+                throw new LoggedException('', 0, $ex);
             }
         }
     }

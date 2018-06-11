@@ -23,6 +23,9 @@ use Psr\Http\Message\ResponseInterface;
 class BuildProvisionerTest extends TestCase
 {
 
+    /**
+     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
+     */
     public function testOnBuildWithExistingJob()
     {
         $dataValueService = $this->getDataValueServiceMock();

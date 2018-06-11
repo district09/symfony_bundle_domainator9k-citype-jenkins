@@ -5,7 +5,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
-use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
+use DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException;
 use DigipolisGent\Domainator9k\CoreBundle\Provisioner\AbstractProvisioner;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
@@ -57,8 +57,7 @@ class DestroyProvisioner extends AbstractProvisioner
                     ->addErrorLogMessage($this->task, $exception->getMessage())
                     ->addFailedLogMessage($this->task, 'Removal failed.');
 
-                $this->task->setFailed();
-                return;
+                throw new LoggedException('', 0, $ex);
             }
         }
     }
@@ -92,7 +91,7 @@ class DestroyProvisioner extends AbstractProvisioner
         } catch (ClientException $ex) {
             if ($ex->getCode() == 404) {
                 $this->taskLoggerService->addWarningLogMessage($this->task, 'Job not found.');
-                return;
+                throw new LoggedException('', 0, $ex);
             }
 
             throw $ex;

@@ -22,6 +22,9 @@ use Psr\Http\Message\ResponseInterface;
 class DestroyProvisionerTest extends TestCase
 {
 
+    /**
+     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
+     */
     public function testOnDestroyWithException()
     {
         $dataValueService = $this->getDataValueServiceMock();
