@@ -1,17 +1,16 @@
 <?php
 
-
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\DestroyEventListener;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\DestroyProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
 use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,14 +19,17 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class DestroyEventListenerTest extends TestCase
+class DestroyProvisionerTest extends TestCase
 {
 
+    /**
+     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
+     */
     public function testOnDestroyWithException()
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskServiceMock();
+        $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -65,22 +67,21 @@ class DestroyEventListenerTest extends TestCase
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
+        $provisioner = new DestroyProvisioner(
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
-        $eventListener->onDestroy($destroyEvent);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     public function testOnDestroyWithoutException()
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskServiceMock();
+        $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -114,15 +115,14 @@ class DestroyEventListenerTest extends TestCase
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
+        $provisioner = new DestroyProvisioner(
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
-        $eventListener->onDestroy($destroyEvent);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     private function getRequestMock()
@@ -155,10 +155,10 @@ class DestroyEventListenerTest extends TestCase
         return $mock;
     }
 
-    private function getTaskServiceMock()
+    private function getTaskLoggerServiceMock()
     {
         $mock = $this
-            ->getMockBuilder(TaskService::class)
+            ->getMockBuilder(TaskLoggerService::class)
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -1,18 +1,17 @@
 <?php
 
 
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\BuildEventListener;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Event\BuildEvent;
-use DigipolisGent\Domainator9k\CoreBundle\Service\TaskService;
+use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,14 +20,17 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class BuildEventListenerTest extends TestCase
+class BuildProvisionerTest extends TestCase
 {
 
+    /**
+     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
+     */
     public function testOnBuildWithExistingJob()
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskService();
+        $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -65,22 +67,21 @@ class BuildEventListenerTest extends TestCase
         $task->setType(Task::TYPE_BUILD);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $event = new BuildEvent($task);
-
-        $eventListener = new BuildEventListener(
+        $provisioner = new BuildProvisioner (
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
-        $eventListener->onBuild($event);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     public function testOnBuildWithNonExistingJob()
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskService = $this->getTaskService();
+        $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
 
@@ -126,15 +127,14 @@ class BuildEventListenerTest extends TestCase
         $task->setType(Task::TYPE_BUILD);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $event = new BuildEvent($task);
-
-        $eventListener = new BuildEventListener(
+        $provisioner = new BuildProvisioner(
             $dataValueService,
             $templateService,
-            $taskService,
+            $taskLoggerService,
             $apiServiceFactory
         );
-        $eventListener->onBuild($event);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
     private function getApiServiceMock()
@@ -182,10 +182,10 @@ class BuildEventListenerTest extends TestCase
         return $mock;
     }
 
-    private function getTaskService()
+    private function getTaskLoggerService()
     {
         $mock = $this
-            ->getMockBuilder(TaskService::class)
+            ->getMockBuilder(TaskLoggerService::class)
             ->disableOriginalConstructor()
             ->getMock();
 
