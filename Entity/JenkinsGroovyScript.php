@@ -44,7 +44,7 @@ class JenkinsGroovyScript
      * @ORM\Column(name="script_order",type="integer")
      * @Assert\NotBlank()
      */
-    protected $order;
+    protected $order = 0;
 
 
     public function __construct()
