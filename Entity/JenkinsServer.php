@@ -54,6 +54,11 @@ class JenkinsServer
     protected $token;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $csrfProtected;
+
+    /**
      * @return string
      */
     public function getJenkinsUrl()
@@ -151,5 +156,21 @@ class JenkinsServer
     public function setToken($token)
     {
         $this->token = $token;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCsrfProtected()
+    {
+        return $this->csrfProtected;
+    }
+
+    /**
+     * @param bool $csrfProtected
+     */
+    public function setCsrfProtected($csrfProtected)
+    {
+        $this->csrfProtected = $csrfProtected;
     }
 }
