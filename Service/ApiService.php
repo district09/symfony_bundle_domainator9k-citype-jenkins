@@ -113,7 +113,7 @@ class ApiService
         $options += $this->getDefaultOptions();
 
         if ($this->csrfProtected) {
-            $token = $this->get($this->url + '/crumbIssuer/api/json');
+            $token = $this->get($this->url . '/crumbIssuer/api/json');
             $options['headers'][$token->crumbRequestField] = $token->crumb;
         }
 
