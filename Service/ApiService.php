@@ -18,6 +18,7 @@ class ApiService
     private $url = '';
     private $user = '';
     private $token = '';
+    private $csrfProtected = false;
 
     /**
      * ApiService constructor.
@@ -28,6 +29,7 @@ class ApiService
         $this->url = $jenkinsServer->getUrl() . ':' . $jenkinsServer->getPort();
         $this->user = $jenkinsServer->getUser();
         $this->token = $jenkinsServer->getToken();
+        $this->csrfProtected = $jenkinsServer->isCsrfProtected();
     }
 
     /**
@@ -48,22 +50,7 @@ class ApiService
      */
     public function getJob($jobname)
     {
-        $client = $this->getClient();
-
-        $response = $client->get(
-            $this->url . '/job/' . $jobname . '/api/json',
-            [
-                'auth' => [
-                    $this->user,
-                    $this->token
-                ],
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ]
-        );
-
-        return json_decode($response->getBody()->getContents(), true);
+        return $this->get($this->url . '/job/' . $jobname . '/api/json');
     }
 
     /**
@@ -73,15 +60,9 @@ class ApiService
      */
     public function createJob($templateJobName, $newJobName)
     {
-        $client = $this->getClient();
-
-        $client->post(
+        $this->post(
             $this->url . '/createItem',
             [
-                'auth' => [
-                    $this->user,
-                    $this->token
-                ],
                 'query' => [
                     'name' => $newJobName,
                     'mode' => 'copy',
@@ -96,17 +77,7 @@ class ApiService
      */
     public function removeJob($jobName)
     {
-        $client = $this->getClient();
-
-        $client->post(
-            $this->url . '/job/' . $jobName . '/doDelete',
-            [
-                'auth' => [
-                    $this->user,
-                    $this->token
-                ]
-            ]
-        );
+        $this->post($this->url . '/job/' . $jobName . '/doDelete');
     }
 
     /**
@@ -114,19 +85,52 @@ class ApiService
      */
     public function executeGroovyscript($script)
     {
-        $client = $this->getClient();
-
-        $client->post(
+        $this->post(
             $this->url . '/scriptText',
             [
-                'auth' => [
-                    $this->user,
-                    $this->token
-                ],
                 'form_params' => [
                     'script' => $script
-                ]
+                ],
             ]
         );
+    }
+
+    protected function get($uri, $options = [])
+    {
+        $client = $this->getClient();
+
+        $options += $this->getDefaultOptions();
+
+        $response = $client->get($uri, $options);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    protected function post($uri, $options = [])
+    {
+        $client = $this->getClient();
+
+        $options += $this->getDefaultOptions();
+
+        if ($this->csrfProtected) {
+            $token = $this->get($this->url . '/crumbIssuer/api/json');
+            $options['headers'][$token->crumbRequestField] = $token->crumb;
+        }
+
+        $client->post($uri, $options);
+    }
+
+
+    protected function getDefaultOptions()
+    {
+        return [
+            'auth' => [
+                $this->user,
+                $this->token
+            ],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ];
     }
 }
