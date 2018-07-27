@@ -54,7 +54,7 @@ class JenkinsServer
     protected $token;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="csrf_protected", type="boolean")
      */
     protected $csrfProtected;
 
