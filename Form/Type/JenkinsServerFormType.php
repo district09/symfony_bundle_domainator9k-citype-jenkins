@@ -19,12 +19,12 @@ class JenkinsServerFormType extends AbstractType
         $builder->add('port');
         $builder->add('user');
         $builder->add('token');
-        $builder->add('templateName');
+        $builder->add('csrfProtected');
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);
-        $resolver->setDefault('data_class',JenkinsServer::class);
+        $resolver->setDefault('data_class', JenkinsServer::class);
     }
 }

@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity()
  * @UniqueEntity(fields={"name"})
+ * @ORM\Table(name="jenkins_groovy_script")
  */
 class JenkinsGroovyScript
 {
@@ -36,6 +37,14 @@ class JenkinsGroovyScript
      * @Assert\NotBlank()
      */
     protected $content;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="script_order",type="integer")
+     * @Assert\NotBlank()
+     */
+    protected $order = 0;
 
 
     public function __construct()
@@ -73,5 +82,21 @@ class JenkinsGroovyScript
     public function setContent($content)
     {
         $this->content = $content;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param int $order
+     */
+    public function setOrder(int $order)
+    {
+        $this->order = $order;
     }
 }

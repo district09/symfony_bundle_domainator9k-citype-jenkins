@@ -54,11 +54,9 @@ class JenkinsServer
     protected $token;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="template_name",type="string")
+     * @ORM\Column(name="csrf_protected", type="boolean")
      */
-    protected $templateName;
+    protected $csrfProtected;
 
     /**
      * @return string
@@ -161,18 +159,18 @@ class JenkinsServer
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getTemplateName()
+    public function isCsrfProtected()
     {
-        return $this->templateName;
+        return $this->csrfProtected;
     }
 
     /**
-     * @param string $templateName
+     * @param bool $csrfProtected
      */
-    public function setTemplateName($templateName)
+    public function setCsrfProtected($csrfProtected)
     {
-        $this->templateName = $templateName;
+        $this->csrfProtected = $csrfProtected;
     }
 }

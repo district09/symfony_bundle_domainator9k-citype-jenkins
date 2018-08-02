@@ -58,6 +58,7 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
                 $options['data'] = $jenkinsServer->getId();
             }
         }
+        $options['attr']['class'] = 'chosen';
 
         return $options;
     }
@@ -66,7 +67,7 @@ class JenkinsServerChoiceFieldType extends AbstractFieldType
      * @param $value
      * @return string
      */
-    public function encodeValue($value): string
+    public function encodeValue($value): ?string
     {
         return $value;
     }

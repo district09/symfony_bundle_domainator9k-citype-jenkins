@@ -15,12 +15,10 @@ class JenkinsServerTest extends TestCase
         $jenkinsServer->setJenkinsUrl('my-jenkins-url');
         $jenkinsServer->setUrl('my-url');
         $jenkinsServer->setUser('my-user');
-        $jenkinsServer->setTemplateName('my-template-name');
 
         $this->assertEquals('my-jenkins-url', $jenkinsServer->getJenkinsUrl());
         $this->assertEquals('my-url', $jenkinsServer->getUrl());
         $this->assertEquals('my-user', $jenkinsServer->getUser());
-        $this->assertEquals('my-template-name', $jenkinsServer->getTemplateName());
     }
 }
 

@@ -28,7 +28,7 @@ class DataTypeProvider implements DataTypeProviderInterface
             [
                 'key' => 'jenkins_job',
                 'label' => 'Jenkins job',
-                'required' => true,
+                'required' => false,
                 'field_type' => 'jenkins_job',
                 'entity_types' => ['application_type_environment', 'application_environment'],
             ]

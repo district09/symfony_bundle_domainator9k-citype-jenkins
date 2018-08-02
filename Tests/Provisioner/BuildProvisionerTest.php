@@ -1,16 +1,16 @@
 <?php
 
 
-namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\EventListener;
+namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\EventListener\DestroyEventListener;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
@@ -20,33 +20,94 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class DestroyEventListenerTest extends TestCase
+class BuildProvisionerTest extends TestCase
 {
 
-    public function testOnDestroyWithException()
+    /**
+     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
+     */
+    public function testOnBuildWithExistingJob()
     {
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
-        $taskLoggerService = $this->getTaskLoggerServiceMock();
+        $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
-
-        $jenkinsServer = new JenkinsServer();
 
         $dataValueService
             ->expects($this->at(0))
             ->method('getValue')
-            ->willReturn($jenkinsServer);
+            ->willReturn(new JenkinsServer());
 
-        $jenkinsJobs = new ArrayCollection();
+        $groovyScripts = new ArrayCollection();
+        $groovyScripts->add(new JenkinsGroovyScript());
 
         $jenkinsJob = new JenkinsJob();
+        $jenkinsJob->setJenkinsGroovyScripts($groovyScripts);
+
+        $jenkinsJobs = new ArrayCollection();
         $jenkinsJobs->add($jenkinsJob);
 
         $dataValueService
             ->expects($this->at(1))
             ->method('getValue')
             ->willReturn($jenkinsJobs);
+
+        $apiService
+            ->expects($this->at(0))
+            ->method('executeGroovyscript')
+            ->willReturnCallback(function (){
+                throw new ClientException('This is an exception.', $this->getRequestMock());
+            });
+
+
+        $applicationEnvironment = new ApplicationEnvironment();
+
+        $task = new Task();
+        $task->setType(Task::TYPE_BUILD);
+        $task->setApplicationEnvironment($applicationEnvironment);
+
+        $provisioner = new BuildProvisioner (
+            $dataValueService,
+            $templateService,
+            $taskLoggerService,
+            $apiServiceFactory
+        );
+        $provisioner->setTask($task);
+        $provisioner->run();
+    }
+
+    public function testOnBuildWithNonExistingJob()
+    {
+        $dataValueService = $this->getDataValueServiceMock();
+        $templateService = $this->getTemplateServiceMock();
+        $taskLoggerService = $this->getTaskLoggerService();
+        $apiService = $this->getApiServiceMock();
+        $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
+
+        $dataValueService
+            ->expects($this->at(0))
+            ->method('getValue')
+            ->willReturn(new JenkinsServer());
+
+        $groovyScripts = new ArrayCollection();
+        $groovyScripts->add(new JenkinsGroovyScript());
+
+        $jenkinsJob = new JenkinsJob();
+        $jenkinsJob->setJenkinsGroovyScripts($groovyScripts);
+
+        $jenkinsJobs = new ArrayCollection();
+        $jenkinsJobs->add($jenkinsJob);
+
+        $dataValueService
+            ->expects($this->at(1))
+            ->method('getValue')
+            ->willReturn($jenkinsJobs);
+
+        $templateService
+            ->expects($this->at(0))
+            ->method('replaceKeys')
+            ->willReturn('my_job_name');
 
         $apiService
             ->expects($this->at(0))
@@ -61,76 +122,42 @@ class DestroyEventListenerTest extends TestCase
             });
 
         $applicationEnvironment = new ApplicationEnvironment();
+
         $task = new Task();
-        $task->setType(Task::TYPE_DESTROY);
+        $task->setType(Task::TYPE_BUILD);
         $task->setApplicationEnvironment($applicationEnvironment);
 
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
+        $provisioner = new BuildProvisioner(
             $dataValueService,
             $templateService,
             $taskLoggerService,
             $apiServiceFactory
         );
-        $eventListener->onDestroy($destroyEvent);
+        $provisioner->setTask($task);
+        $provisioner->run();
     }
 
-    public function testOnDestroyWithoutException()
-    {
-        $dataValueService = $this->getDataValueServiceMock();
-        $templateService = $this->getTemplateServiceMock();
-        $taskLoggerService = $this->getTaskLoggerServiceMock();
-        $apiService = $this->getApiServiceMock();
-        $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
-
-        $jenkinsServer = new JenkinsServer();
-
-        $dataValueService
-            ->expects($this->at(0))
-            ->method('getValue')
-            ->willReturn($jenkinsServer);
-
-        $jenkinsJobs = new ArrayCollection();
-
-        $jenkinsJob = new JenkinsJob();
-        $jenkinsJobs->add($jenkinsJob);
-
-        $dataValueService
-            ->expects($this->at(1))
-            ->method('getValue')
-            ->willReturn($jenkinsJobs);
-
-        $apiService
-            ->expects($this->at(0))
-            ->method('getJob');
-
-        $apiService
-            ->expects($this->at(1))
-            ->method('removeJob');
-
-        $applicationEnvironment = new ApplicationEnvironment();
-        $task = new Task();
-        $task->setType(Task::TYPE_DESTROY);
-        $task->setApplicationEnvironment($applicationEnvironment);
-
-        $destroyEvent = new DestroyEvent($task);
-
-        $eventListener = new DestroyEventListener(
-            $dataValueService,
-            $templateService,
-            $taskLoggerService,
-            $apiServiceFactory
-        );
-        $eventListener->onDestroy($destroyEvent);
-    }
-
-    private function getRequestMock()
+    private function getApiServiceMock()
     {
         $mock = $this
-            ->getMockBuilder(RequestInterface::class)
+            ->getMockBuilder(ApiService::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        return $mock;
+    }
+
+    private function getApiServiceFactoryMock($apiService)
+    {
+        $mock = $this
+            ->getMockBuilder(ApiServiceFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mock
+            ->expects($this->at(0))
+            ->method('create')
+            ->willReturn($apiService);
 
         return $mock;
     }
@@ -155,7 +182,7 @@ class DestroyEventListenerTest extends TestCase
         return $mock;
     }
 
-    private function getTaskLoggerServiceMock()
+    private function getTaskLoggerService()
     {
         $mock = $this
             ->getMockBuilder(TaskLoggerService::class)
@@ -165,25 +192,10 @@ class DestroyEventListenerTest extends TestCase
         return $mock;
     }
 
-    private function getApiServiceFactoryMock($apiService)
+    private function getRequestMock()
     {
         $mock = $this
-            ->getMockBuilder(ApiServiceFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mock
-            ->expects($this->at(0))
-            ->method('create')
-            ->willReturn($apiService);
-
-        return $mock;
-    }
-
-    private function getApiServiceMock()
-    {
-        $mock = $this
-            ->getMockBuilder(ApiService::class)
+            ->getMockBuilder(RequestInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -63,7 +63,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $options['by_reference'] = false;
         $options['prototype'] = true;
         $options['prototype_data'] = new JenkinsJob();
-        $options['entry_options']['groovy_script_options'] = $groovyScriptRepository->findAll();
+        $options['entry_options']['groovy_script_options'] = $groovyScriptRepository->findBy([],['order' => 'asc']);
 
         $data = $this->decodeValue($value);
 
@@ -71,7 +71,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
         if ($originEntity instanceof ApplicationEnvironment && is_null($originEntity->getId())) {
             $applicationType = $atRepository->findOneBy(
-                ['type' => $originEntity->getApplication()->getApplicationType()]
+                ['name' => $originEntity->getApplication()->getApplicationType()]
             );
 
             $criteria = [
@@ -100,7 +100,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
      * @param $value
      * @return string
      */
-    public function encodeValue($value): string
+    public function encodeValue($value): ?string
     {
         $jenkinsJobIds = [];
 

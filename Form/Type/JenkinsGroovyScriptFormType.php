@@ -16,6 +16,7 @@ class JenkinsGroovyScriptFormType extends AbstractType
         parent::buildForm($builder, $options);
         $builder->add('name');
         $builder->add('content');
+        $builder->add('order');
     }
 
     public function configureOptions(OptionsResolver $resolver)
