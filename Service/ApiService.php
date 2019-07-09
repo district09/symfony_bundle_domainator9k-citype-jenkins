@@ -114,7 +114,9 @@ class ApiService
 
         if ($this->csrfProtected) {
             $token = $this->get($this->url . '/crumbIssuer/api/json');
-            $options['headers'][$token->crumbRequestField] = $token->crumb;
+            if ($token && isset($token->crumbRequestField)) {
+                $options['headers'][$token->crumbRequestField] = $token->crumb;
+            }
         }
 
         $client->post($uri, $options);
