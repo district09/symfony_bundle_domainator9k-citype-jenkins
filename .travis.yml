@@ -6,9 +6,7 @@ php:
 install:
   - composer self-update
   - composer global require hirak/prestissimo
-  - composer require zaporylie/composer-drupal-optimizations
-  - composer config 'extra.composer-drupal-optimizations.require.symfony/symfony' '>=3.4'
-  - composer install
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist --no-interaction
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
