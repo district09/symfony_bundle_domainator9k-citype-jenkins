@@ -46,6 +46,12 @@ class JenkinsGroovyScript
      */
     protected $order = 0;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="JenkinsJob", mappedBy="jenkinsGroovyScripts")
+     */
+    protected $jenkinsJobs;
 
     public function __construct()
     {
@@ -98,5 +104,18 @@ class JenkinsGroovyScript
     public function setOrder(int $order)
     {
         $this->order = $order;
+    }
+
+    public function setJenkinsGroovyScripts($groovyScripts)
+    {
+        $this->jenkinsGroovyScripts = $groovyScripts;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getJenkinsGroovyScripts()
+    {
+        return $this->jenkinsGroovyScripts->toArray();
     }
 }
