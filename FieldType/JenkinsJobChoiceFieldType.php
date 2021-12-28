@@ -109,6 +109,7 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
 
         foreach ($value as $jenkinsJob) {
             $this->entityManager->persist($jenkinsJob);
+            $this->entityManager->flush();
             $jenkinsJobIds[] = $jenkinsJob->getId();
         }
 
