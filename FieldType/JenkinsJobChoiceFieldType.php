@@ -60,8 +60,8 @@ class JenkinsJobChoiceFieldType extends AbstractFieldType
         $options['entry_type'] = JenkinsJobFormType::class;
         $options['allow_add'] = true;
         $options['allow_delete'] = true;
-        $options['delete_empty'] = function (JenkinsJob $job) {
-            return empty($job->getName()) && empty($job->getId()) && empty($job->getSystemName() && $job->getJenkinsGroovyScripts()->isEmpty());
+        $options['delete_empty'] = function (?JenkinsJob $job = null) {
+            return null === $job || (empty($job->getName()) && empty($job->getId()) && empty($job->getSystemName() && $job->getJenkinsGroovyScripts()->isEmpty()));
         };
         $options['by_reference'] = false;
         $options['prototype'] = true;
