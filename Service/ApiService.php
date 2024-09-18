@@ -95,6 +95,13 @@ class ApiService
         );
     }
 
+    public function getCredentials()
+    {
+        $response = $this->get($this->url . '/manage/credentials/store/system/domain/_/api/json?depth=1');
+
+        return $response['credentials'] ?? [];
+    }
+
     protected function get($uri, $options = [])
     {
         $client = $this->getClient();
