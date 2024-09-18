@@ -24,6 +24,7 @@ class DataTypeProvider implements DataTypeProviderInterface
                 'required' => true,
                 'field_type' => 'jenkins_server_choice',
                 'entity_types' => ['application_environment'],
+                'order' => -3,
             ],
             [
                 'key' => 'jenkins_job',
@@ -31,7 +32,8 @@ class DataTypeProvider implements DataTypeProviderInterface
                 'required' => false,
                 'field_type' => 'jenkins_job',
                 'entity_types' => ['application_type_environment', 'application_environment'],
-            ]
+                'order' => -1,
+            ],
         ];
     }
 }
