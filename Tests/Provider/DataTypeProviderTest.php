@@ -24,7 +24,7 @@ class DataTypeProviderTest extends TestCase
         foreach ($dataTypeProvider->getDataTypes() as $dataType) {
             foreach ($keys as $name => $type){
                 $this->assertArrayHasKey($name, $dataType);
-                $this->assertInternalType($type,$dataType[$name]);
+                $this->assertEquals($type, gettype($dataType[$name]));
             }
         }
     }

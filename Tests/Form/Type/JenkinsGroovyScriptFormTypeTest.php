@@ -4,10 +4,7 @@
 namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Form\Type;
 
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsGroovyScriptFormType;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsJobFormType;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsServerFormType;
 
 class JenkinsGroovyScriptFormTypeTest extends AbstractFormTypeTest
 {
@@ -17,7 +14,7 @@ class JenkinsGroovyScriptFormTypeTest extends AbstractFormTypeTest
         $optionsResolver = $this->getOptionsResolverMock();
 
         $optionsResolver
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('setDefault')
             ->with('data_class',JenkinsGroovyScript::class);
 
@@ -32,18 +29,20 @@ class JenkinsGroovyScriptFormTypeTest extends AbstractFormTypeTest
         $arguments = [
             'name',
             'content',
+            'order',
         ];
 
         $index = 0;
 
-        foreach ($arguments as $argument) {
-            $formBuilder
-                ->expects($this->at($index))
-                ->method('add')
-                ->with($argument);
-
-            $index++;
-        }
+        $formBuilder->expects($this->atLeast(2))
+            ->method('add')
+            ->willReturnCallback(function ($argument) use ($arguments, &$index) {
+                if (!array_key_exists($index, $arguments)) {
+                    $this->fail('Did not expect invocation with argument ' . $argument . ' at invocation number ' . ($index + 1));
+                }
+                $this->assertEquals($arguments[$index], $argument);
+                $index++;
+            });
 
         $formType = new JenkinsGroovyScriptFormType();
         $formType->buildForm($formBuilder,[]);

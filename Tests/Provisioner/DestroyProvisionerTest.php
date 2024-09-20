@@ -9,7 +9,7 @@ use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\DestroyProvisio
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
-use DigipolisGent\Domainator9k\CoreBundle\Event\DestroyEvent;
+use DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
@@ -22,23 +22,17 @@ use Psr\Http\Message\ResponseInterface;
 class DestroyProvisionerTest extends TestCase
 {
 
-    /**
-     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
-     */
     public function testOnDestroyWithException()
     {
+        $this->expectException(LoggedException::class);
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
         $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
+        $applicationEnvironment = new ApplicationEnvironment();
 
         $jenkinsServer = new JenkinsServer();
-
-        $dataValueService
-            ->expects($this->at(0))
-            ->method('getValue')
-            ->willReturn($jenkinsServer);
 
         $jenkinsJobs = new ArrayCollection();
 
@@ -46,12 +40,23 @@ class DestroyProvisionerTest extends TestCase
         $jenkinsJobs->add($jenkinsJob);
 
         $dataValueService
-            ->expects($this->at(1))
+            ->expects($this->atLeast(2))
             ->method('getValue')
-            ->willReturn($jenkinsJobs);
+            ->willReturnCallback(function(ApplicationEnvironment $appEnv, string $key) use ($applicationEnvironment, $jenkinsJobs) {
+                $this->assertSame($applicationEnvironment, $appEnv);
+                switch ($key) {
+                  case 'jenkins_server':
+                    return new JenkinsServer();
+
+                  case 'jenkins_job':
+                    return $jenkinsJobs;
+                }
+
+                $this->fail('This line should not be reached');
+            });
 
         $apiService
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getJob')
             ->willReturnCallback(function () {
                 $exception = new ClientException('This is an exception.',
@@ -62,7 +67,6 @@ class DestroyProvisionerTest extends TestCase
                 throw $exception;
             });
 
-        $applicationEnvironment = new ApplicationEnvironment();
         $task = new Task();
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
@@ -84,13 +88,9 @@ class DestroyProvisionerTest extends TestCase
         $taskLoggerService = $this->getTaskLoggerServiceMock();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
+        $applicationEnvironment = new ApplicationEnvironment();
 
         $jenkinsServer = new JenkinsServer();
-
-        $dataValueService
-            ->expects($this->at(0))
-            ->method('getValue')
-            ->willReturn($jenkinsServer);
 
         $jenkinsJobs = new ArrayCollection();
 
@@ -98,19 +98,29 @@ class DestroyProvisionerTest extends TestCase
         $jenkinsJobs->add($jenkinsJob);
 
         $dataValueService
-            ->expects($this->at(1))
+            ->expects($this->atLeast(2))
             ->method('getValue')
-            ->willReturn($jenkinsJobs);
+            ->willReturnCallback(function(ApplicationEnvironment $appEnv, string $key) use ($applicationEnvironment, $jenkinsJobs) {
+                $this->assertSame($applicationEnvironment, $appEnv);
+                switch ($key) {
+                  case 'jenkins_server':
+                    return new JenkinsServer();
+
+                  case 'jenkins_job':
+                    return $jenkinsJobs;
+                }
+
+                $this->fail('This line should not be reached');
+            });
 
         $apiService
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getJob');
 
         $apiService
-            ->expects($this->at(1))
+            ->expects($this->atLeastOnce())
             ->method('removeJob');
 
-        $applicationEnvironment = new ApplicationEnvironment();
         $task = new Task();
         $task->setType(Task::TYPE_DESTROY);
         $task->setApplicationEnvironment($applicationEnvironment);
@@ -173,7 +183,7 @@ class DestroyProvisionerTest extends TestCase
             ->getMock();
 
         $mock
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('create')
             ->willReturn($apiService);
 

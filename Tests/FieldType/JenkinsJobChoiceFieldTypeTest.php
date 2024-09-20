@@ -53,12 +53,13 @@ class JenkinsJobChoiceFieldTypeTest extends TestCase
     {
         $jenkinsJobRepository = $this->getRepositoryMock();
 
-        for ($i = 1; $i <= 3; $i++) {
-            $jenkinsJobRepository
-                ->expects($this->at($i - 1))
-                ->method('find')
-                ->willReturn($this->setEntitytId(new JenkinsJob(), $i));
-        }
+        $jenkinsJobRepository->expects($this->atLeast(3))
+            ->method('find')
+            ->willReturnOnConsecutiveCalls(
+                $this->setEntitytId(new JenkinsJob(), 1),
+                $this->setEntitytId(new JenkinsJob(), 2),
+                $this->setEntitytId(new JenkinsJob(), 3),
+            );
 
         $repositories = [
             [
@@ -74,7 +75,7 @@ class JenkinsJobChoiceFieldTypeTest extends TestCase
         $value = '[1,2,3]';
         $result = $fieldType->decodeValue($value);
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertCount(3, $result);
     }
 
@@ -151,26 +152,27 @@ class JenkinsJobChoiceFieldTypeTest extends TestCase
         $jenkinsJobRepository = $this->getRepositoryMock();
 
         $atRepository
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('findOneBy')
             ->willReturn($applicationType);
 
         $ateRepository
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('findOneBy')
             ->willReturn($applicationTypeEnvironment);
 
         $sdvRepository
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('findOneByKey')
             ->willReturn($settingDataValue);
 
-        for ($i = 1; $i <= 3; $i++) {
-            $jenkinsJobRepository
-                ->expects($this->at($i - 1))
-                ->method('find')
-                ->willReturn($this->setEntitytId(new JenkinsJob(), $i));
-        }
+        $jenkinsJobRepository->expects($this->atLeast(3))
+          ->method('find')
+          ->willReturnOnConsecutiveCalls(
+              $this->setEntitytId(new JenkinsJob(), 1),
+              $this->setEntitytId(new JenkinsJob(), 2),
+              $this->setEntitytId(new JenkinsJob(), 3),
+          );
 
         $repositories = [
             [
@@ -238,17 +240,16 @@ class JenkinsJobChoiceFieldTypeTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $index = 0;
-
-        foreach ($repositories as $repositoryArr) {
-            $mock
-                ->expects($this->at($index))
-                ->method('getRepository')
-                ->with($this->equalTo($repositoryArr['class']))
-                ->willReturn($repositoryArr['repository']);
-
-            $index++;
-        }
+        $mock
+            ->expects($this->atLeast(count($repositories)))
+            ->method('getRepository')
+            ->willReturnCallback(function ($class) use ($repositories) {
+                foreach ($repositories as $repositoryArr) {
+                    if ($class === $repositoryArr['class']) {
+                        return $repositoryArr['repository'];
+                    }
+                }
+            });
 
         return $mock;
     }

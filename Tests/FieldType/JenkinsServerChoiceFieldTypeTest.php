@@ -41,14 +41,14 @@ class JenkinsServerChoiceFieldTypeTest extends TestCase
         $repository = $this->getRepositoryMock();
 
         $repository
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('find')
             ->willReturn($jenkinsServer);
 
         $entityManager = $this->getEntityManagerMock();
 
         $entityManager
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getRepository')
             ->with($this->equalTo(JenkinsServer::class))
             ->willReturn($repository);
@@ -74,14 +74,14 @@ class JenkinsServerChoiceFieldTypeTest extends TestCase
         $repository = $this->getRepositoryMock();
 
         $repository
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('findAll')
             ->willReturn($jenkinsServers);
 
         $entityManager = $this->getEntityManagerMock();
 
         $entityManager
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getRepository')
             ->with($this->equalTo(JenkinsServer::class))
             ->willReturn($repository);
