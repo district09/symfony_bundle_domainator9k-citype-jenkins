@@ -14,7 +14,7 @@ class JenkinsServerFormTypeTest extends AbstractFormTypeTest
         $optionsResolver = $this->getOptionsResolverMock();
 
         $optionsResolver
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('setDefault')
             ->with('data_class', JenkinsServer::class);
 
@@ -32,18 +32,20 @@ class JenkinsServerFormTypeTest extends AbstractFormTypeTest
             'port',
             'user',
             'token',
+            'csrfProtected',
         ];
 
         $index = 0;
 
-        foreach ($arguments as $argument) {
-            $formBuilder
-                ->expects($this->at($index))
-                ->method('add')
-                ->with($argument);
-
-            $index++;
-        }
+        $formBuilder->expects($this->atLeast(2))
+            ->method('add')
+            ->willReturnCallback(function ($argument) use ($arguments, &$index) {
+                if (!array_key_exists($index, $arguments)) {
+                    $this->fail('Did not expect invocation with argument ' . $argument . ' at invocation number ' . ($index + 1));
+                }
+                $this->assertEquals($arguments[$index], $argument);
+                $index++;
+            });
 
         $formType = new JenkinsServerFormType();
         $formType->buildForm($formBuilder, []);

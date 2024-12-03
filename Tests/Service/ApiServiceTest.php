@@ -13,11 +13,9 @@ use Psr\Http\Message\StreamInterface;
 class ApiServiceTest extends TestCase
 {
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetJobWithException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $apiService = $this->getApiServiceMock();
         $apiService->getJob('job-name');
     }
@@ -30,8 +28,8 @@ class ApiServiceTest extends TestCase
         $reponse = $this->getResponseMock($body);
 
         $client
-            ->expects($this->at(0))
-            ->method('__call')
+            ->expects($this->atLeastOnce())
+            ->method('get')
             ->willReturn($reponse);
 
 
@@ -68,7 +66,7 @@ class ApiServiceTest extends TestCase
         $jenkinsServer = new JenkinsServer();
         $jenkinsServer->setName('example-name');
         $jenkinsServer->setPort(22);
-        $jenkinsServer->setJenkinsUrl('example-url');
+        $jenkinsServer->setJenkinsUrl('http://example.com');
         $jenkinsServer->setToken('token');
 
         $service = new ApiService($jenkinsServer);
@@ -102,7 +100,7 @@ class ApiServiceTest extends TestCase
             ->getMock();
 
         $mock
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getContents')
             ->willReturn(json_encode($result));
 
@@ -117,7 +115,7 @@ class ApiServiceTest extends TestCase
             ->getMock();
 
         $mock
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('getBody')
             ->willReturn($body);
 

@@ -15,7 +15,7 @@ class DigipolisGentDomainator9kSockExtensionTest extends TestCase
     {
         $container = $this->getContainerBuilderMock();
         $container
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('fileExists');
 
 

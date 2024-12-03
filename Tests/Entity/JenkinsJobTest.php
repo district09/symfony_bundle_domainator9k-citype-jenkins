@@ -22,6 +22,7 @@ class JenkinsJobTest extends TestCase
     {
         $expected = [
             'systemName()' => 'getSystemName()',
+            'id()' => 'getId()',
         ];
         $this->assertEquals($expected, JenkinsJob::getTemplateReplacements());
     }

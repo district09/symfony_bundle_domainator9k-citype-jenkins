@@ -6,11 +6,12 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Provisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsGroovyScript;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
-use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner\BuildProvisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\ApplicationEnvironment;
 use DigipolisGent\Domainator9k\CoreBundle\Entity\Task;
+use DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TemplateService;
 use DigipolisGent\SettingBundle\Service\DataValueService;
@@ -23,21 +24,16 @@ use Psr\Http\Message\ResponseInterface;
 class BuildProvisionerTest extends TestCase
 {
 
-    /**
-     * @expectedException \DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException
-     */
-    public function testOnBuildWithExistingJob()
+    public function testOnBuildWithException()
     {
+        $this->expectException(LoggedException::class);
+
         $dataValueService = $this->getDataValueServiceMock();
         $templateService = $this->getTemplateServiceMock();
         $taskLoggerService = $this->getTaskLoggerService();
         $apiService = $this->getApiServiceMock();
         $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
-
-        $dataValueService
-            ->expects($this->at(0))
-            ->method('getValue')
-            ->willReturn(new JenkinsServer());
+        $applicationEnvironment = new ApplicationEnvironment();
 
         $groovyScripts = new ArrayCollection();
         $groovyScripts->add(new JenkinsGroovyScript());
@@ -49,69 +45,30 @@ class BuildProvisionerTest extends TestCase
         $jenkinsJobs->add($jenkinsJob);
 
         $dataValueService
-            ->expects($this->at(1))
+            ->expects($this->atLeast(2))
             ->method('getValue')
-            ->willReturn($jenkinsJobs);
+            ->willReturnCallback(function(ApplicationEnvironment $appEnv, string $key) use ($applicationEnvironment, $jenkinsJobs) {
+                $this->assertSame($applicationEnvironment, $appEnv);
+                switch ($key) {
+                  case 'jenkins_server':
+                    return new JenkinsServer();
 
-        $apiService
-            ->expects($this->at(0))
-            ->method('executeGroovyscript')
-            ->willReturnCallback(function (){
-                throw new ClientException('This is an exception.', $this->getRequestMock());
+                  case 'jenkins_job':
+                    return $jenkinsJobs;
+                }
+
+                $this->fail('This line should not be reached');
             });
 
 
-        $applicationEnvironment = new ApplicationEnvironment();
-
-        $task = new Task();
-        $task->setType(Task::TYPE_BUILD);
-        $task->setApplicationEnvironment($applicationEnvironment);
-
-        $provisioner = new BuildProvisioner (
-            $dataValueService,
-            $templateService,
-            $taskLoggerService,
-            $apiServiceFactory
-        );
-        $provisioner->setTask($task);
-        $provisioner->run();
-    }
-
-    public function testOnBuildWithNonExistingJob()
-    {
-        $dataValueService = $this->getDataValueServiceMock();
-        $templateService = $this->getTemplateServiceMock();
-        $taskLoggerService = $this->getTaskLoggerService();
-        $apiService = $this->getApiServiceMock();
-        $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
-
-        $dataValueService
-            ->expects($this->at(0))
-            ->method('getValue')
-            ->willReturn(new JenkinsServer());
-
-        $groovyScripts = new ArrayCollection();
-        $groovyScripts->add(new JenkinsGroovyScript());
-
-        $jenkinsJob = new JenkinsJob();
-        $jenkinsJob->setJenkinsGroovyScripts($groovyScripts);
-
-        $jenkinsJobs = new ArrayCollection();
-        $jenkinsJobs->add($jenkinsJob);
-
-        $dataValueService
-            ->expects($this->at(1))
-            ->method('getValue')
-            ->willReturn($jenkinsJobs);
-
         $templateService
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('replaceKeys')
             ->willReturn('my_job_name');
 
         $apiService
-            ->expects($this->at(0))
-            ->method('getJob')
+            ->expects($this->atLeastOnce())
+            ->method('executeGroovyScript')
             ->willReturnCallback(function () {
                 $exception = new ClientException('This is an exception.',
                     $this->getRequestMock(),
@@ -121,7 +78,65 @@ class BuildProvisionerTest extends TestCase
                 throw $exception;
             });
 
+        $task = new Task();
+        $task->setType(Task::TYPE_BUILD);
+        $task->setApplicationEnvironment($applicationEnvironment);
+
+        $provisioner = new BuildProvisioner(
+            $dataValueService,
+            $templateService,
+            $taskLoggerService,
+            $apiServiceFactory
+        );
+        $provisioner->setTask($task);
+        $provisioner->run();
+    }
+
+    public function testOnBuildWithoutException()
+    {
+        $dataValueService = $this->getDataValueServiceMock();
+        $templateService = $this->getTemplateServiceMock();
+        $taskLoggerService = $this->getTaskLoggerService();
+        $apiService = $this->getApiServiceMock();
+        $apiServiceFactory = $this->getApiServiceFactoryMock($apiService);
         $applicationEnvironment = new ApplicationEnvironment();
+
+
+        $groovyScripts = new ArrayCollection();
+        $groovyScripts->add(new JenkinsGroovyScript());
+
+        $jenkinsJob = new JenkinsJob();
+        $jenkinsJob->setJenkinsGroovyScripts($groovyScripts);
+
+        $jenkinsJobs = new ArrayCollection();
+        $jenkinsJobs->add($jenkinsJob);
+
+        $dataValueService
+            ->expects($this->atLeast(2))
+            ->method('getValue')
+            ->willReturnCallback(function(ApplicationEnvironment $appEnv, string $key) use ($applicationEnvironment, $jenkinsJobs) {
+                $this->assertSame($applicationEnvironment, $appEnv);
+                switch ($key) {
+                  case 'jenkins_server':
+                    return new JenkinsServer();
+
+                  case 'jenkins_job':
+                    return $jenkinsJobs;
+                }
+
+                $this->fail('This line should not be reached');
+            });
+
+
+        $templateService
+            ->expects($this->atLeastOnce())
+            ->method('replaceKeys')
+            ->willReturn('my_job_name');
+
+        $apiService
+            ->expects($this->atLeastOnce())
+            ->method('executeGroovyScript')
+            ->willReturn(NULL);
 
         $task = new Task();
         $task->setType(Task::TYPE_BUILD);
@@ -155,7 +170,7 @@ class BuildProvisionerTest extends TestCase
             ->getMock();
 
         $mock
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('create')
             ->willReturn($apiService);
 

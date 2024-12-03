@@ -17,12 +17,12 @@ class JenkinsJobFormTypeTest extends AbstractFormTypeTest
         $optionsResolver = $this->getOptionsResolverMock();
 
         $optionsResolver
-            ->expects($this->at(0))
+            ->expects($this->atLeastOnce())
             ->method('setRequired')
             ->with('groovy_script_options');
 
         $optionsResolver
-            ->expects($this->at(1))
+            ->expects($this->atLeastOnce())
             ->method('setDefaults')
             ->with([ 'data_class' => JenkinsJob::class]);
 
@@ -40,19 +40,20 @@ class JenkinsJobFormTypeTest extends AbstractFormTypeTest
         $arguments = [
             'name',
             'systemName',
-            'jenkinsGroovyScripts'
+            'jenkinsGroovyScripts',
         ];
 
         $index = 0;
 
-        foreach ($arguments as $argument){
-            $formBuilder
-                ->expects($this->at($index))
-                ->method('add')
-                ->with($argument);
-
-            $index++;
-        }
+        $formBuilder->expects($this->atLeast(2))
+            ->method('add')
+            ->willReturnCallback(function ($argument) use ($arguments, &$index) {
+                if (!array_key_exists($index, $arguments)) {
+                    $this->fail('Did not expect invocation with argument ' . $argument . ' at invocation number ' . ($index + 1));
+                }
+                $this->assertEquals($arguments[$index], $argument);
+                $index++;
+            });
 
         $formType = new JenkinsJobFormType();
         $formType->buildForm($formBuilder,$options);

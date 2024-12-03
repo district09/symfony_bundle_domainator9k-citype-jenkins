@@ -10,6 +10,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 abstract class AbstractFormTypeTest extends TestCase
 {
 
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject|FormBuilderInterface
+     */
     protected function getFormBuilderMock()
     {
         $mock = $this
