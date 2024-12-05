@@ -12,11 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class JenkinsGroovyScript
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity
- *
- * @ORM\Entity()
- * @UniqueEntity(fields={"name"})
- * @ORM\Table(name="jenkins_groovy_script")
  */
+#[ORM\Table(name: 'jenkins_groovy_script')]
+#[ORM\Entity]
+#[UniqueEntity(fields: ['name'])]
 class JenkinsGroovyScript
 {
 
@@ -24,33 +23,29 @@ class JenkinsGroovyScript
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name",type="string")
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'name', type: 'string')]
+    #[Assert\NotBlank]
     protected $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="content",type="text")
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'content', type: 'text')]
+    #[Assert\NotBlank]
     protected $content;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="script_order",type="integer")
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'script_order', type: 'integer')]
+    #[Assert\NotBlank]
     protected $order = 0;
 
     /**
      * @var ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="JenkinsJob", mappedBy="jenkinsGroovyScripts")
      */
+    #[ORM\ManyToMany(targetEntity: \JenkinsJob::class, mappedBy: 'jenkinsGroovyScripts')]
     protected $jenkinsJobs;
 
     public function __construct()
