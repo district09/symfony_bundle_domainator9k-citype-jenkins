@@ -18,7 +18,8 @@
   },
   "autoload": {
     "psr-4": {
-      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": ""
+      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": "src",
+      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\Tests": "tests"
     }
   }
 }
