@@ -52,20 +52,22 @@ class JenkinsServer
 
     /**
      * @return string
+     * @deprecated
      */
     public function getJenkinsUrl()
     {
-        return $this->jenkinsUrl;
+        return $this->url;
     }
 
     /**
      * @param string $jenkinsUrl
      *
      * @return $this
+     * @deprecated
      */
     public function setJenkinsUrl($jenkinsUrl)
     {
-        $this->jenkinsUrl = $jenkinsUrl;
+        $this->url = $jenkinsUrl;
 
         return $this;
     }

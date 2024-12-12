@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class JenkinsJobFormTypeTest extends AbstractFormTypeTest
+class JenkinsJobFormTypeTest extends AbstractFormType
 {
 
     public function testConfigureOptions()

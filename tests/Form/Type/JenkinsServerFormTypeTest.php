@@ -6,7 +6,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Form\Type;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsServerFormType;
 
-class JenkinsServerFormTypeTest extends AbstractFormTypeTest
+class JenkinsServerFormTypeTest extends AbstractFormType
 {
 
     public function testConfigureOptions()
