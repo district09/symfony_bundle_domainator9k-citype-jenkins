@@ -40,7 +40,7 @@ class JenkinsJob implements TemplateInterface
      * @var ArrayCollection
      */
     #[ORM\JoinTable(name: 'jenkins_job_jenkins_groovy_script')]
-    #[ORM\ManyToMany(targetEntity: \JenkinsGroovyScript::class, inversedBy: 'jenkinsJobs', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: JenkinsGroovyScript::class, inversedBy: 'jenkinsJobs', cascade: ['persist'])]
     protected $jenkinsGroovyScripts;
 
     public function __construct()

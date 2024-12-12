@@ -45,7 +45,7 @@ class JenkinsGroovyScript
     /**
      * @var ArrayCollection
      */
-    #[ORM\ManyToMany(targetEntity: \JenkinsJob::class, mappedBy: 'jenkinsGroovyScripts')]
+    #[ORM\ManyToMany(targetEntity: JenkinsJob::class, mappedBy: 'jenkinsGroovyScripts')]
     protected $jenkinsJobs;
 
     public function __construct()
