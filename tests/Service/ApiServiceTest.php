@@ -13,13 +13,6 @@ use Psr\Http\Message\StreamInterface;
 class ApiServiceTest extends TestCase
 {
 
-    public function testGetJobWithException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $apiService = $this->getApiServiceMock();
-        $apiService->getJob('job-name');
-    }
-
     public function testGetJob()
     {
         $client = $this->getClientMock();

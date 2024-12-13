@@ -5,6 +5,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Provisioner;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsJob;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Factory\ApiServiceFactory;
+use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Service\ApiService;
 use DigipolisGent\Domainator9k\CoreBundle\Exception\LoggedException;
 use DigipolisGent\Domainator9k\CoreBundle\Provisioner\AbstractProvisioner;
 use DigipolisGent\Domainator9k\CoreBundle\Service\TaskLoggerService;
@@ -19,17 +20,13 @@ use GuzzleHttp\Exception\ClientException;
  */
 class DestroyProvisioner extends AbstractProvisioner
 {
-
-    private $dataValueService;
-    private $templateService;
-    private $taskLoggerService;
-    private $apiServiceFactory;
+    protected ?ApiService $apiService;
 
     public function __construct(
-        DataValueService $dataValueService,
-        TemplateService $templateService,
-        TaskLoggerService $taskLoggerService,
-        ApiServiceFactory $apiServiceFactory
+        protected DataValueService $dataValueService,
+        protected TemplateService $templateService,
+        protected TaskLoggerService $taskLoggerService,
+        protected ApiServiceFactory $apiServiceFactory,
     ) {
         $this->dataValueService = $dataValueService;
         $this->templateService = $templateService;

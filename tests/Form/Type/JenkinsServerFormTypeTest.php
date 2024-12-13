@@ -6,7 +6,7 @@ namespace DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Tests\Form\Type;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity\JenkinsServer;
 use DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Form\Type\JenkinsServerFormType;
 
-class JenkinsServerFormTypeTest extends AbstractFormTypeTest
+class JenkinsServerFormTypeTest extends AbstractFormType
 {
 
     public function testConfigureOptions()
@@ -39,12 +39,13 @@ class JenkinsServerFormTypeTest extends AbstractFormTypeTest
 
         $formBuilder->expects($this->atLeast(2))
             ->method('add')
-            ->willReturnCallback(function ($argument) use ($arguments, &$index) {
+            ->willReturnCallback(function ($argument) use ($arguments, &$index, $formBuilder) {
                 if (!array_key_exists($index, $arguments)) {
                     $this->fail('Did not expect invocation with argument ' . $argument . ' at invocation number ' . ($index + 1));
                 }
                 $this->assertEquals($arguments[$index], $argument);
                 $index++;
+                return $formBuilder;
             });
 
         $formType = new JenkinsServerFormType();

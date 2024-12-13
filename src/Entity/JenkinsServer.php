@@ -7,10 +7,8 @@ use DigipolisGent\Domainator9k\CoreBundle\Entity\Traits\IdentifiableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="jenkins_server")
- */
+#[ORM\Table(name: 'jenkins_server')]
+#[ORM\Entity]
 class JenkinsServer
 {
 
@@ -18,62 +16,58 @@ class JenkinsServer
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name",type="string")
      */
+    #[ORM\Column(name: 'name', type: 'string')]
     protected $name;
 
     /**
      * @var string
-     * @ORM\Column(name="url", type="string", nullable=false)
-     * @Assert\NotBlank()
-     * @Assert\Length(min="1", max="255")
      */
+    #[ORM\Column(name: 'url', type: 'string', nullable: false)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 255)]
     protected $url;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="port", type="integer", nullable=false)
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'port', type: 'integer', nullable: false)]
+    #[Assert\NotBlank]
     protected $port;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="user",type="string")
      */
+    #[ORM\Column(name: 'user', type: 'string')]
     protected $user;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="token",type="string")
      */
+    #[ORM\Column(name: 'token', type: 'string')]
     protected $token;
 
-    /**
-     * @ORM\Column(name="csrf_protected", type="boolean")
-     */
+    #[ORM\Column(name: 'csrf_protected', type: 'boolean')]
     protected $csrfProtected;
 
     /**
      * @return string
+     * @deprecated
      */
     public function getJenkinsUrl()
     {
-        return $this->jenkinsUrl;
+        return $this->url;
     }
 
     /**
      * @param string $jenkinsUrl
      *
      * @return $this
+     * @deprecated
      */
     public function setJenkinsUrl($jenkinsUrl)
     {
-        $this->jenkinsUrl = $jenkinsUrl;
+        $this->url = $jenkinsUrl;
 
         return $this;
     }
