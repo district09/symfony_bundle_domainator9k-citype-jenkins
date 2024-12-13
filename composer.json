@@ -9,7 +9,7 @@
   "require": {
     "php": ">=7.1",
     "doctrine/orm": "^2.5",
-    "digipolisgent/domainator9k-core-bundle": "^3.0",
+    "digipolisgent/domainator9k-core-bundle": "^4.0",
     "guzzlehttp/guzzle": "^7.2"
   },
   "require-dev": {
@@ -18,7 +18,8 @@
   },
   "autoload": {
     "psr-4": {
-      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": ""
+      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\": "src",
+      "DigipolisGent\\Domainator9k\\CiTypes\\JenkinsBundle\\Tests\\": "tests"
     }
   }
 }

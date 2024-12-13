@@ -13,10 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class JenkinsJob
  * @package DigipolisGent\Domainator9k\CiTypes\JenkinsBundle\Entity
- *
- * @ORM\Entity()
- * @ORM\Table(name="jenkins_job")
  */
+#[ORM\Table(name: 'jenkins_job')]
+#[ORM\Entity]
 class JenkinsJob implements TemplateInterface
 {
 
@@ -25,26 +24,23 @@ class JenkinsJob implements TemplateInterface
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name",type="string")
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'name', type: 'string')]
+    #[Assert\NotBlank]
     protected $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="system_name",type="string")
-     * @Assert\NotBlank()
      */
+    #[ORM\Column(name: 'system_name', type: 'string')]
+    #[Assert\NotBlank]
     protected $systemName;
 
     /**
      * @var ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="JenkinsGroovyScript", inversedBy="jenkinsJobs",cascade={"persist"})
-     * @ORM\JoinTable(name="jenkins_job_jenkins_groovy_script")
      */
+    #[ORM\JoinTable(name: 'jenkins_job_jenkins_groovy_script')]
+    #[ORM\ManyToMany(targetEntity: JenkinsGroovyScript::class, inversedBy: 'jenkinsJobs', cascade: ['persist'])]
     protected $jenkinsGroovyScripts;
 
     public function __construct()
